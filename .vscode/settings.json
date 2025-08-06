@@ -50,5 +50,10 @@
         "text_encoding": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp"
+    },
+    "files.encoding": "utf8",
+    "files.autoGuessEncoding": true,
+    "[cpp]": {
+        "files.encoding": "utf8"
     }
 }
