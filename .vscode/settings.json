@@ -49,7 +49,9 @@
         "streambuf": "cpp",
         "text_encoding": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "cstdarg": "cpp",
+        "iomanip": "cpp"
     },
     "files.encoding": "utf8",
     "files.autoGuessEncoding": true,
