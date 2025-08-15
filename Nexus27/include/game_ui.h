@@ -4,7 +4,7 @@
 #include "game_types.h"
 
 // 게임 UI 관련 함수들
-int start_game_ui(int choice);
+int start_game_ui();
 GameState new_game();
 void load_game();
 void help();    

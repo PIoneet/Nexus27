@@ -10,16 +10,17 @@ int main() {
     // 한글 출력을 위한 콘솔 코드페이지 설정
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
+
     
     vector<GameCharacter> player;
     player.resize(30);
     
     GameState gameState = READY;
     int choice = 0;
-    
+
     while (gameState != EXIT) {
         if (gameState == READY) {
-            choice = start_game_ui(choice);
+            choice = start_game_ui();
             
             switch(choice){
                 case 1:

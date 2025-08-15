@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C/C++ Run",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.exe", //이 줄로 main.exe 파일 찾는다.
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

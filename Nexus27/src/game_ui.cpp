@@ -6,8 +6,8 @@
 
 using namespace std;
 
-int start_game_ui(int choice) {
-    cout << "-----Dungeon Map Game-----" << endl;
+int start_game_ui() {
+    cout << "-----Nexus27-----" << endl;
     cout << "1. 새 게임" << endl;
     cout << "2. 불러오기" << endl;
     cout << "3. 도움말" << endl;
@@ -32,23 +32,38 @@ GameState new_game() {
         switch(choice) {
             case 1: {
                 cout << "\n=== 직업 선택 ===" << endl;
-                cout << "1. 전사 (높은 체력과 방어력)" << endl;
-                cout << "2. 마법사 (높은 마나와 지능)" << endl;
-                cout << "3. 도적 (높은 민첩성)" << endl;
-                
-                int jobChoice = get_valid_input(1, 3, "직업을 선택하세요: ");
-                
+                cout << "1. 광부 (높은 체력과 방어력)" << endl;
+                cout << "2. 교주 (높은 마나와 지능)" << endl;
+                cout << "3. 해커 (높은 민첩성)" << endl;
+                cout << "4. 의사 (높은 회복력)" << endl;
+                cout << "5. 연설가 (높은 매력)" << endl;
+                cout << "6. 암살자 (높은 기민함)" << endl;
+
+                int jobChoice = get_valid_input(1, 6, "직업을 선택하세요: ");
+
                 switch(jobChoice) {
                     case 1:
-                        newCharacter.job = "전사";
-                        newCharacter.stats = {100, 30, 80, 70, 50, 40}; // HP, MP, STR, DEF, AGI, INT
+                        newCharacter.job = "광부";
+                        newCharacter.stats = {100, 30, 80, 70, 50, 40};
                         break;
                     case 2:
-                        newCharacter.job = "마법사";
+                        newCharacter.job = "교주";
                         newCharacter.stats = {60, 100, 40, 30, 60, 90};
                         break;
                     case 3:
-                        newCharacter.job = "도적";
+                        newCharacter.job = "해커";
+                        newCharacter.stats = {80, 50, 60, 50, 90, 60};
+                        break;
+                    case 4:
+                        newCharacter.job = "의사";
+                        newCharacter.stats = {100, 30, 80, 70, 50, 40};
+                        break;
+                    case 5:
+                        newCharacter.job = "연설가";
+                        newCharacter.stats = {60, 100, 40, 30, 60, 90};
+                        break;
+                    case 6:
+                        newCharacter.job = "암살자";
                         newCharacter.stats = {80, 50, 60, 50, 90, 60};
                         break;
                 }
@@ -108,7 +123,7 @@ void game_intro() {
 
 void game_play() {
     cout << "\n=== 게임 플레이 ===" << endl;
-    cout << "1. 던전 맵 탐험" << endl;
+    cout << "1. 탐색 시작" << endl;
     cout << "2. 인벤토리 확인" << endl;
     cout << "3. 상태 확인" << endl;
     cout << "4. 게임 종료" << endl;
