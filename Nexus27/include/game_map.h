@@ -1,8 +1,10 @@
 #ifndef GAME_MAP_H
 #define GAME_MAP_H
 
+#include <utility>
 #include <vector>
 #include <string>
+#include <windows.h>
 
 using std::vector;
 using std::string;
@@ -12,6 +14,7 @@ struct MapTile {
     int id;
     string symbol;
     string description;
+    string color; // 타일 색깔 멤버 추가
     bool isAccessible;
 };
 
@@ -24,14 +27,19 @@ private:
 public:
     GameMap();
     void initializeMap();
-    void displayMap();
+    void displayMap(string& color);
     void movePlayer(char direction);
     bool isValidMove(int x, int y);
     void setPlayerPosition(int x, int y);
+    int getPlayerX();
+    int getPlayerY();
     MapTile* getCurrentTile();
+    void setTileColor(int x, int y, const std::string& color);
+    void setPlayerTileColor(int x, int y, const std::string& color);
 };
 
+
+
 // 게임 맵 관련 함수
-void game_map();
 
 #endif // GAME_MAP_H

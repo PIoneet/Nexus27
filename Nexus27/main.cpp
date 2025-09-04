@@ -1,30 +1,32 @@
 #include <iostream>
 #include <vector>
 #include <windows.h>
-#include "include/game_types.h"
 #include "include/game_ui.h"
+#include "include/game_map.h"
+#include "include/character.h"
 
 using namespace std;
+GameState gameState = READY; //전역 변수로 설정
+GameMap globalMap;
+vector<GameCharacter> player(3, GameCharacter(&globalMap));
+GameCharacter* currentPlayer = nullptr;
 
 int main() {
     // 한글 출력을 위한 콘솔 코드페이지 설정
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
 
-    
-    vector<GameCharacter> player;
-    player.resize(30);
-    
-    GameState gameState = READY;
-    int choice = 0;
 
+
+    //위 코드로 player 내부에 단일 객체 3개 만들고 생성자로 초기화까지.
+    int choice = 0;
     while (gameState != EXIT) {
         if (gameState == READY) {
             choice = start_game_ui();
             
             switch(choice){
-                case 1:
-                    gameState = new_game();
+                case 1: 
+                   currentPlayer = new_game(player);
                     break;
                 case 2:
                     load_game();
@@ -36,15 +38,16 @@ int main() {
                     exit_game();
                     gameState = EXIT;
                     break;
-                default:
-                    cout << "잘못된 선택입니다. 다시 시도하세요." << endl;
-                    break;
             }
         }
-        else if (gameState == PLAY) {
+        else if (gameState == INTRO) {
+            system("cls"); // 화면 지우기
             game_intro();
-            game_play(); // 실제 게임 플레이 함수 호출
-            gameState = EXIT; // 게임 플레이 후 종료
+
+            while(gameState == INTRO) {
+                game_play(*currentPlayer); // 객체가 필요하니까 *주소값
+            }
+
         }
     }
 

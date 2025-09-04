@@ -1,97 +1,102 @@
 #include "../include/game_ui.h"
 #include "../include/input_utils.h"
 #include "../include/character.h"
-#include "../include/game_map.h"
 #include <iostream>
 
 using namespace std;
+string color[COLOR_SIZE] = {"red", "blue", "green"};
 
 int start_game_ui() {
+    system("cls"); 
     cout << "-----Nexus27-----" << endl;
-    cout << "1. 새 게임" << endl;
+    cout << "\n1. 새 게임" << endl;
     cout << "2. 불러오기" << endl;
     cout << "3. 도움말" << endl;
-    cout << "4. 게임 종료" << endl;
+    cout << "4. 게임 종료\n" << endl;
     
     return get_valid_input(1, 4, "Enter your choice: ");
 }
 
-GameState new_game() {
-    cout << "=== 새 게임 시작 ===" << endl;
-    
-    GameCharacter newCharacter;
+GameCharacter* new_game(vector<GameCharacter>& players) {
     
     while (true) {
-        cout << "\n1. 직업 선택" << endl;
-        cout << "2. 캐릭터 커스터마이즈" << endl;
-        cout << "3. 게임 시작" << endl;
-        cout << "4. 뒤로 가기" << endl;
-        
-        int choice = get_valid_input(1, 4, "Enter your choice: ");
-        
-        switch(choice) {
-            case 1: {
-                cout << "\n=== 직업 선택 ===" << endl;
-                cout << "1. 광부 (높은 체력과 방어력)" << endl;
-                cout << "2. 교주 (높은 마나와 지능)" << endl;
-                cout << "3. 해커 (높은 민첩성)" << endl;
-                cout << "4. 의사 (높은 회복력)" << endl;
-                cout << "5. 연설가 (높은 매력)" << endl;
-                cout << "6. 암살자 (높은 기민함)" << endl;
+        system("cls");
+        cout << "-----New Game-----" << endl;
+        cout << "\n1. 캐릭터 선택" << endl;
+        cout << "2. 캐릭터 생성" << endl;
+        cout << "3. 뒤로 가기\n" << endl;
+        int choice = get_valid_input(1, 3, "선택: ");
 
-                int jobChoice = get_valid_input(1, 6, "직업을 선택하세요: ");
-
-                switch(jobChoice) {
-                    case 1:
-                        newCharacter.job = "광부";
-                        newCharacter.stats = {100, 30, 80, 70, 50, 40};
-                        break;
-                    case 2:
-                        newCharacter.job = "교주";
-                        newCharacter.stats = {60, 100, 40, 30, 60, 90};
-                        break;
-                    case 3:
-                        newCharacter.job = "해커";
-                        newCharacter.stats = {80, 50, 60, 50, 90, 60};
-                        break;
-                    case 4:
-                        newCharacter.job = "의사";
-                        newCharacter.stats = {100, 30, 80, 70, 50, 40};
-                        break;
-                    case 5:
-                        newCharacter.job = "연설가";
-                        newCharacter.stats = {60, 100, 40, 30, 60, 90};
-                        break;
-                    case 6:
-                        newCharacter.job = "암살자";
-                        newCharacter.stats = {80, 50, 60, 50, 90, 60};
-                        break;
-                }
-                cout << newCharacter.job << "를 선택했습니다!" << endl;
-                break;
+        if (choice == 1) {
+            // 생성된 캐릭터만 목록에 표시
+            int created_count = 0;
+            for (size_t i = 0; i < players.size(); ++i) {
+                if (!players[i].name.empty()) ++created_count;
             }
-            case 2:
-                if (newCharacter.job.empty()) {
-                    cout << "먼저 직업을 선택해주세요!" << endl;
-                } else {
-                    customize_character(newCharacter);
+            if (created_count == 0) {
+                cout << "아직 생성된 캐릭터가 없습니다. 캐릭터를 먼저 생성하세요.\n";
+            } else {
+                cout << "\n생성된 캐릭터 목록:\n" << endl;
+                for (size_t i = 0; i < players.size(); ++i) {
+                    if (!players[i].name.empty()) {
+                        cout << i+1 << ". 이름: " << players[i].name << ", 직업: " << players[i].job << "\n" << endl;
+                    }
                 }
-                break;
-            case 3:
-                if (newCharacter.job.empty() || newCharacter.name.empty()) {
-                    cout << "직업 선택과 캐릭터 커스터마이즈를 먼저 완료해주세요!" << endl;
+                cout << "\n선택할 캐릭터 번호: ";
+                int sel;
+                cin >> sel;
+                // 선택된 번호가 생성된 캐릭터인지 확인
+                if (sel >= 1 && sel <= (int)players.size() && !players[sel-1].name.empty()) {
+                    cout << "게임을 시작합니다: " << players[sel-1].name << "\n";
+                    gameState = INTRO;
+                    return &players[sel-1];
+                    
                 } else {
-                    cout << "\n캐릭터 생성이 완료되었습니다!" << endl;
-                    cout << "이름: " << newCharacter.name << endl;
-                    cout << "직업: " << newCharacter.job << endl;
-                    cout << "게임을 시작합니다..." << endl;
-                    return PLAY; // 상태를 PLAY로 변경
+                    cout << "잘못된 선택입니다.\n";
                 }
-                break;
-            case 4:
-                return READY; // 메인 메뉴로 돌아가기
+            }
+        } else if (choice == 2) {
+            // 빈 슬롯(이름이 빈 문자열)에만 캐릭터 생성
+            bool created = false;
+            for (size_t i = 0; i < players.size(); ++i) {
+                if (players[i].name.empty()) {
+                    GameCharacter newChar(&globalMap, color[i]);
+
+                    customize_character(newChar);
+                    
+                    cout << "\n=== 직업 선택 ===" << endl;
+                    cout << "1. 광부 (STR 특화)" << endl;
+                    cout << "2. 교주 (MEN 특화)" << endl;
+                    cout << "3. 해커 (TEC 특화)" << endl;
+                    cout << "4. 의사 (RES 특화)" << endl;
+                    cout << "5. 연설가 (PER 특화)" << endl;
+                    cout << "6. 암살자 (AGI 특화)" << endl;
+                    int jobChoice = get_valid_input(1, 6, "직업을 선택하세요: ");
+                    switch(jobChoice) {
+                        case 1: newChar.job = "광부"; newChar.stats = {100, 30, 80, 70, 50, 40}; break;
+                        case 2: newChar.job = "교주"; newChar.stats = {60, 100, 40, 30, 60, 90}; break;
+                        case 3: newChar.job = "해커"; newChar.stats = {80, 50, 60, 50, 90, 60}; break;
+                        case 4: newChar.job = "의사"; newChar.stats = {100, 30, 80, 70, 50, 40}; break;
+                        case 5: newChar.job = "연설가"; newChar.stats = {60, 100, 40, 30, 60, 90}; break;
+                        case 6: newChar.job = "암살자"; newChar.stats = {80, 50, 60, 50, 90, 60}; break;
+                    }
+                    cout << "\n" << newChar.job << "를 선택했습니다!" << endl;
+                    
+                    players[i] = newChar;
+                    cout << "캐릭터가 생성되었습니다!\n";;
+                    created = true;
+                    break;
+                }
+            }
+            if (!created) {
+                cout << "모든 슬롯에 캐릭터가 이미 생성되어 있습니다.\n";
+            }
+        } else if (choice == 3) {
+            cout << "뒤로갑니다.\n";
+            gameState = READY;
+            return nullptr;
         }
-        
+
         cout << "Press Enter to continue...";
         cin.ignore();
         cin.get();
@@ -121,18 +126,23 @@ void game_intro() {
     //대사 넘어갈떄마다 음성 소리 나오는 것도 재밌을듯.
 }
 
-void game_play() {
-    cout << "\n=== 게임 플레이 ===" << endl;
-    cout << "1. 탐색 시작" << endl;
+// 단일 캐릭터 플레이용 오버로드
+void game_play(GameCharacter& gamePlayer) {
+    system("cls");
+    cout << "=== 게임 플레이 ===" << endl;
+    cout << "\n플레이어: " << gamePlayer.name << "\n" << endl;
+    cout << "1. 탐색 진행" << endl;
     cout << "2. 인벤토리 확인" << endl;
     cout << "3. 상태 확인" << endl;
-    cout << "4. 게임 종료" << endl;
-    
-    int choice = get_valid_input(1, 4, "선택하세요: ");
-    
+    cout << "4. 캐릭터 변경" << endl;
+    cout << "5. 게임 종료\n" << endl;
+    int choice = get_valid_input(1, 5, "선택하세요: ");
+    system("cls");
     switch(choice) {
+        
         case 1:
-            game_map(); // 던전 맵 함수 호출
+            gamePlayer.pos = operation_map(gamePlayer);
+
             break;
         case 2:
             cout << "인벤토리 기능은 아직 구현되지 않았습니다." << endl;
@@ -141,10 +151,13 @@ void game_play() {
             cout << "상태 확인 기능은 아직 구현되지 않았습니다." << endl;
             break;
         case 4:
-            cout << "게임을 종료합니다." << endl;
+            cout << "캐릭터 변경하기." << endl;
+            currentPlayer = new_game(player);
             break;
-        default:
-            cout << "잘못된 선택입니다." << endl;
+        case 5:
+            cout << "게임을 종료합니다." << endl;
+            gameState = EXIT;
             break;
     }
 }
+

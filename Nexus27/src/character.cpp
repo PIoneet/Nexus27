@@ -7,9 +7,14 @@ using namespace std;
 void customize_character(GameCharacter& character) {
     cout << "\n=== 캐릭터 커스터마이즈 ===" << endl;
     
-    cout << "캐릭터의 이름을 입력하세요: ";
-    cin.ignore(); // 입력 버퍼 비우기
-    getline(cin, character.name);
+    while(true){
+        cout << "\n캐릭터의 이름을 입력하세요: ";
+        cin.ignore(); // 입력 버퍼 비우기
+        getline(cin, character.name);
+        if(!character.name.empty()) break;
+        else system("cls");
+    }
+    
     
     cout << "\n현재 스탯:" << endl;
     cout << "STR: " << character.stats[0] << endl;
@@ -48,4 +53,40 @@ void customize_character(GameCharacter& character) {
     cout << "AGI: " << character.stats[5] << endl;
     
     cout << "\n캐릭터 커스터마이즈가 완료되었습니다!" << endl;
+}
+
+#include <iostream>
+#include <vector>
+#include <random>
+#include <algorithm>
+
+std::vector<int> random_partition(int total, int parts) {
+    std::vector<int> cuts;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1, total - 1);
+
+    // 5개의 컷 위치를 랜덤하게 선택
+    while (cuts.size() < parts - 1) {
+        int cut = dis(gen);
+        if (std::find(cuts.begin(), cuts.end(), cut) == cuts.end())
+            cuts.push_back(cut);
+    }
+    cuts.push_back(0);
+    cuts.push_back(total);
+    std::sort(cuts.begin(), cuts.end());
+
+    std::vector<int> result;
+    for (int i = 1; i < cuts.size(); ++i) {
+        result.push_back(cuts[i] - cuts[i - 1]);
+    }
+    return result;
+}
+
+int main() {
+    auto numbers = random_partition(120, 6);
+    for (int n : numbers)
+        std::cout << n << " ";
+    std::cout << std::endl;
+    return 0;
 }
