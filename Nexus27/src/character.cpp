@@ -1,6 +1,9 @@
 #include "../include/character.h"
 #include "../include/input_utils.h"
 #include <iostream>
+#include <vector>
+#include <random>
+#include <algorithm>
 
 using namespace std;
 
@@ -55,38 +58,29 @@ void customize_character(GameCharacter& character) {
     cout << "\n캐릭터 커스터마이즈가 완료되었습니다!" << endl;
 }
 
-#include <iostream>
-#include <vector>
-#include <random>
-#include <algorithm>
 
-std::vector<int> random_partition(int total, int parts) {
-    std::vector<int> cuts;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(1, total - 1);
+
+vector<int> random_partition(int total, int parts) {
+    vector<int> cuts;
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(1, total - 1);
 
     // 5개의 컷 위치를 랜덤하게 선택
     while (cuts.size() < parts - 1) {
         int cut = dis(gen);
-        if (std::find(cuts.begin(), cuts.end(), cut) == cuts.end())
+        if (find(cuts.begin(), cuts.end(), cut) == cuts.end()) // 중복 방지
+        //cut가 cuts에 없으면 cuts.end()를 반환함.
             cuts.push_back(cut);
     }
     cuts.push_back(0);
     cuts.push_back(total);
-    std::sort(cuts.begin(), cuts.end());
+    sort(cuts.begin(), cuts.end());
+    //서로다른 5개의 숫자와 앞에는 0 뒤에는 120이 정렬됨.
 
-    std::vector<int> result;
+    vector<int> result;
     for (int i = 1; i < cuts.size(); ++i) {
         result.push_back(cuts[i] - cuts[i - 1]);
     }
     return result;
-}
-
-int main() {
-    auto numbers = random_partition(120, 6);
-    for (int n : numbers)
-        std::cout << n << " ";
-    std::cout << std::endl;
-    return 0;
 }

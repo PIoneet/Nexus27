@@ -6,8 +6,7 @@
 #include <string>
 #include <windows.h>
 
-using std::vector;
-using std::string;
+using namespace std;
 
 //위 구조체는 1개의 개인 타일을 의미함(단일 객체)
 struct MapTile {
