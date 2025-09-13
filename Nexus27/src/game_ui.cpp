@@ -1,6 +1,6 @@
-#include "../include/game_ui.h"
-#include "../include/input_utils.h"
-#include "../include/character.h"
+#include "game_ui.h"
+#include "input_utils.h"
+#include "character.h"
 #include <iostream>
 
 using namespace std;

@@ -1,13 +1,13 @@
-#include "../include/game_map.h"
-#include "../include/game_types.h"
+#include "game_map.h"
+#include "game_types.h"
 #include <iostream>
 #include <iomanip>
-#include "../include/termcolor.hpp"
+#include "termcolor.hpp"
 
 using namespace std;
 
 // 문자열로 색상을 지정하는 함수
-ostream& setColor(ostream& os, const string& color) {
+ostream& setColor(ostream& os, const string& color) {  
     if (color == "red") return termcolor::red(os);
     if (color == "green") return termcolor::green(os);
     if (color == "yellow") return termcolor::yellow(os);

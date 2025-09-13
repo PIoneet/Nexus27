@@ -1,9 +1,10 @@
-#include "../include/character.h"
-#include "../include/input_utils.h"
+
 #include <iostream>
 #include <vector>
 #include <random>
 #include <algorithm>
+#include "character.h"
+#include "input_utils.h"
 
 using namespace std;
 

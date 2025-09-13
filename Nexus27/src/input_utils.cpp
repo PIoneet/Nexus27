@@ -1,4 +1,4 @@
-#include "../include/input_utils.h"
+#include "input_utils.h"
 #include <iostream>
 
 using namespace std;
