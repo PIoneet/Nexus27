@@ -91,11 +91,6 @@ void GameMap::initializeMap() {
 void GameMap::displayMap(string& color){
     system("cls"); // 화면 지우기
     cout << "========== Operation Map ==========" << endl;
-    cout << termcolor::red << "Hello, ";     
-    cout << termcolor::reset;              // 16 colors
-    cout << termcolor::color<40> << "Colorful ";          // 256 colors
-    cout << termcolor::color<50, 54, 10> << "World!"; 
-    cout << termcolor::reset;
     cout << "현재 위치: (" << playerX << ", " << playerY << ")" << endl;
     cout << "특이사항: " << getCurrentTile()->description << endl;
     cout << "\n";

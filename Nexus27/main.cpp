@@ -1,11 +1,13 @@
 #include <iostream>
 #include <vector>
 #include <windows.h>
+
 #include "game_ui.h"
 #include "game_map.h"
 #include "character.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "triangle_buffer.h"
 
 using namespace std;
 GameState gameState = READY; //전역 변수로 설정
@@ -13,8 +15,9 @@ GameMap globalMap;
 vector<GameCharacter> player(3, GameCharacter(&globalMap));
 GameCharacter* currentPlayer = nullptr;
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) //여러 창을 사용하는 경우 창을 구분하기 위해 주소를 인자로 받음.
 {
+    (void)window;
     glViewport(0, 0, width, height);
 }
 
@@ -57,7 +60,12 @@ int main() {
 
         }
     }
+
+    cout << "Press Enter to exit...";
+    cin.ignore(); // 입력 버퍼 비우기
+    cin.get();    // 사용자 입력 대기
     
+
     if (!glfwInit())
     {
         cout << "Failed to initialize GLFW" << endl;
@@ -70,24 +78,31 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window;
-    window = glfwCreateWindow(800, 600, "ZMMR", NULL, NULL);
-    if (window == NULL)
+    window = glfwCreateWindow(1200, 1000, "Combat", NULL, NULL);
+
+    if (window == NULL) // 포인터는 NULL이 들어갈 수 있어서 체크하는거임.
     {
         cout << "Failed to open GLFW window" << endl;
         return -1;
     }
-    glfwMakeContextCurrent(window);
+    
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    glfwMakeContextCurrent(window); // 랜더링(화면에 그리기)을 할 윈도우를 지정하는 작업
+
+    // 삼각형 버퍼 준비 예시
+    unsigned int VAO, VBO;
+    setupTriangleBuffers(VAO, VBO);
+
+    if ( !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) )
     {
         cout << "Failed to initialize GLAD" << endl;
         return -1;
     }
 
-    glViewport(0, 0, 800, 600);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glViewport(0, 0, 1200, 1000);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); //만약 윈도우 창이 여러개 있을시 한개를 지정해서 콜백함수를 호출할 수 있음.
 
-    while(!glfwWindowShouldClose(window))
+    while(!glfwWindowShouldClose(window)) 
     {
         glfwSwapBuffers(window);
         glfwPollEvents();    
@@ -95,8 +110,6 @@ int main() {
 
     glfwTerminate();
 
-    //cout << "Press Enter to exit...";
-    //cin.ignore(); // 입력 버퍼 비우기
-    //cin.get();    // 사용자 입력 대기
+    
     return 0;
 }
