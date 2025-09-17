@@ -60,10 +60,6 @@ int main() {
 
         }
     }
-
-    cout << "Press Enter to exit...";
-    cin.ignore(); // 입력 버퍼 비우기
-    cin.get();    // 사용자 입력 대기
     
 
     if (!glfwInit())
@@ -89,15 +85,15 @@ int main() {
 
     glfwMakeContextCurrent(window); // 랜더링(화면에 그리기)을 할 윈도우를 지정하는 작업
 
-    // 삼각형 버퍼 준비 예시
-    unsigned int VAO, VBO;
-    setupTriangleBuffers(VAO, VBO);
-
     if ( !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) )
     {
         cout << "Failed to initialize GLAD" << endl;
         return -1;
     }
+
+    // 인덱스가 있는 삼각형 리스트(사각형) 버퍼 준비 예시
+    unsigned int VAO, VBO, EBO;
+    setupTriangleBuffers(VAO, VBO, EBO);
 
     glViewport(0, 0, 1200, 1000);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); //만약 윈도우 창이 여러개 있을시 한개를 지정해서 콜백함수를 호출할 수 있음.

@@ -1,3 +1,3 @@
 #pragma once
 
-void setupTriangleBuffers(unsigned int& VAO, unsigned int& VBO);
+void setupTriangleBuffers(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
