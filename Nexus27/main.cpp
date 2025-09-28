@@ -1,13 +1,16 @@
 #include <iostream>
 #include <vector>
 #include <windows.h>
-
 #include "game_ui.h"
 #include "game_map.h"
 #include "character.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "triangle_buffer.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <fstream>
 
 using namespace std;
 GameState gameState = READY; //전역 변수로 설정
@@ -20,6 +23,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) //여�
     (void)window;
     glViewport(0, 0, width, height);
 }
+
+
 
 int main() {
     // 한글 출력을 위한 콘솔 코드페이지 설정
@@ -91,9 +96,60 @@ int main() {
         return -1;
     }
 
-    // 인덱스가 있는 삼각형 리스트(사각형) 버퍼 준비 예시
+    // 셰이더 프로그램 생성 및 초기화
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    GLuint shaderProgram; //gpu에서 최종으로 실행하는 링크된 오픈 gl 객체
+
+    std::ifstream vShaderFile("src\\vertex_shader.glsl");
+    if (!vShaderFile.is_open()) {
+        std::cout << "vertex_shader.glsl 파일을 열 수 없습니다.`" << std::endl;
+        return -1;
+    }
+    std::string vShaderCode((std::istreambuf_iterator<char>(vShaderFile)), std::istreambuf_iterator<char>());
+    const char* vShaderSource = vShaderCode.c_str();
+    glShaderSource(vertexShader, 1, &vShaderSource, NULL); //GPU에 소스코드 전달
+    glCompileShader(vertexShader); // GPU에 컴파일 명령 전달
+
+
+    std::ifstream fShaderFile("src\\fragment_shader.glsl");
+    std::string fShaderCode((std::istreambuf_iterator<char>(fShaderFile)), std::istreambuf_iterator<char>());
+    const char* fShaderSource = fShaderCode.c_str();
+    glShaderSource(fragmentShader, 1, &fShaderSource, NULL);
+    glCompileShader(fragmentShader);
+
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    glUseProgram(shaderProgram); //현재 사용할 셰이더 프로그램을 GPU에 활성화(바인딩)
+
+    GLint success; // openGL에서만 사용하는 정수형 타입이다.
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        char infoLog[512];
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        std::cout << "Shader Program Link Error:\n" << infoLog << std::endl;
+    }
+
+
     unsigned int VAO, VBO, EBO;
     setupTriangleBuffers(VAO, VBO, EBO);
+
+    glm::mat4 model = glm::mat4(1.0f); // 아래 코드의 순서로 이동을 먼저할지 회전을 먼저할지 결정 가능
+    model = glm::translate(model, glm::vec3(1.0f, 2.0f, 0.0f)); // 이동 
+    model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // 회전
+    model = glm::scale(model, glm::vec3(2.0f, 2.0f, 1.0f)); // 스케일
+
+    glm::vec3 eye = glm::vec3(0.0f, 0.0f, 3.0f);
+    glm::vec3 target = glm::vec3(1.0f, 2.0f, 0.0f);
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::mat4 view = glm::lookAt(eye, target, up); //알아서 u,v,n 계산해줌.
+
+    int modelLoc = glGetUniformLocation(shaderProgram, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model)); //modelloc 위치에 데이터 전달
+    int viewLoc = glGetUniformLocation(shaderProgram, "view");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view)); //viewLoc 위치에 데이터 전달
 
     glViewport(0, 0, 1200, 1000);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); //만약 윈도우 창이 여러개 있을시 한개를 지정해서 콜백함수를 호출할 수 있음.

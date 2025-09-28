@@ -13,7 +13,7 @@ void setupTriangleBuffers(unsigned int& VAO, unsigned int& VBO, unsigned int& EB
         0, 1, 3,   // 첫 번째 삼각형
         1, 2, 3    // 두 번째 삼각형
     };
-    glGenVertexArrays(1, &VAO);
+    glGenVertexArrays(1, &VAO); //VAO[인덱스]로 여러개의 ID 저장 가능
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
     glBindVertexArray(VAO); //VAO 바인딩 
@@ -21,6 +21,8 @@ void setupTriangleBuffers(unsigned int& VAO, unsigned int& VBO, unsigned int& EB
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    //셰이더에 정점 속성을 순차적으로 전달
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 

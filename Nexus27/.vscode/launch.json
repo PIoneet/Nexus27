@@ -5,7 +5,7 @@
             "name": "C/C++ Run",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/main.exe", //이 줄로 main.exe 파일 찾는다.
+            "program": "${workspaceFolder}\\main.exe", //이 줄로 main.exe 파일 찾는다.
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
