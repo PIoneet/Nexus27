@@ -18,8 +18,7 @@ void customize_character(GameCharacter& character) {
         if(!character.name.empty()) break;
         else system("cls");
     }
-    
-    
+
     cout << "\n현재 스탯:" << endl;
     cout << "STR: " << character.stats[0] << endl;
     cout << "MEN: " << character.stats[1] << endl;
@@ -28,24 +27,52 @@ void customize_character(GameCharacter& character) {
     cout << "PER: " << character.stats[4] << endl;
     cout << "AGI: " << character.stats[5] << endl;
     
-    cout << "\n추가 스탯 포인트 10점을 배분할 수 있습니다." << endl;
-    int remainingPoints = 10;
-    
-    while (remainingPoints > 0) {
-        cout << "\n남은 포인트: " << remainingPoints << endl;
-        cout << "1. STR (+1)  2. MEN (+1)  3. TEC (+1)  4. RES (+1)  5. PER (+1)  6. AGI (+1)  7. 완료" << endl;
+    cout << "\n랜덤으로 스탯을 조정 가능합니다." << endl;
+    vector<int> random_stats;
 
-        int choice = get_valid_input(1, 7, "어느 스탯을 올리시겠습니까? ");
-
-        if (choice == 7) {
+    while(true) {
+        cout << "스탯을 랜덤으로 조정하시겠습니까? (y/n): ";
+        char choice;
+        cin >> choice;
+        if(choice == 'n' || choice == 'N'){
             break;
-        } else if (choice >= 1 && choice <= 6) {
-            character.stats[choice - 1]++;
-            remainingPoints--;
-            cout << "스탯이 증가했습니다!" << endl;
-        } 
+        }
+        else{
+            random_stats = random_partition(120, 6);
+            character.stats = {random_stats[0], random_stats[1], random_stats[2], random_stats[3], random_stats[4], random_stats[5]};
+            break;
+        }
     }
+
+    cout << "\n현재 스탯:" << endl;
+    cout << "직업: " << character.job << endl;
+    cout << "STR: " << character.stats[0] << endl;
+    cout << "MEN: " << character.stats[1] << endl;
+    cout << "TEC: " << character.stats[2] << endl;
+    cout << "RES: " << character.stats[3] << endl;
+    cout << "PER: " << character.stats[4] << endl;
+    cout << "AGI: " << character.stats[5] << endl;
+
     
+    cout << "\n=== 직업 선택 ===" << endl;
+    cout << "1. 광부 (STR 특화)" << endl;
+    cout << "2. 교주 (MEN 특화)" << endl;
+    cout << "3. 해커 (TEC 특화)" << endl;
+    cout << "4. 의사 (RES 특화)" << endl;
+    cout << "5. 연설가 (PER 특화)" << endl;
+    cout << "6. 암살자 (AGI 특화)" << endl;
+    int jobChoice = get_valid_input(1, 6, "직업을 선택하세요: ");
+
+    switch(jobChoice) {
+        case 1: character.job = "광부"; break;
+        case 2: character.job = "교주"; break;
+        case 3: character.job = "해커"; break;
+        case 4: character.job = "의사"; break;
+        case 5: character.job = "연설가"; break;
+        case 6: character.job = "암살자"; break;
+    }
+    cout << "\n" << character.job << "를 선택했습니다!" << endl;
+
     cout << "\n최종 스탯:" << endl;
     cout << "이름: " << character.name << endl;
     cout << "직업: " << character.job << endl;

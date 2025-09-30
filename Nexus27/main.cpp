@@ -146,10 +146,18 @@ int main() {
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::mat4 view = glm::lookAt(eye, target, up); //알아서 u,v,n 계산해줌.
 
+    float fovy = 45.0f;
+    float aspect = 1200.0f / 1000.0f;
+    float zNear = 0.1f;
+    float zFar = 100.0f;
+    glm::mat4 projection = glm::perspective(glm::radians(fovy), aspect, zNear, zFar);
+
     int modelLoc = glGetUniformLocation(shaderProgram, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model)); //modelloc 위치에 데이터 전달
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     int viewLoc = glGetUniformLocation(shaderProgram, "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view)); //viewLoc 위치에 데이터 전달
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view)); 
+    int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     glViewport(0, 0, 1200, 1000);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); //만약 윈도우 창이 여러개 있을시 한개를 지정해서 콜백함수를 호출할 수 있음.

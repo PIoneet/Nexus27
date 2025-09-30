@@ -40,6 +40,13 @@ GameCharacter* new_game(vector<GameCharacter>& players) {
                 for (size_t i = 0; i < players.size(); ++i) {
                     if (!players[i].name.empty()) {
                         cout << i+1 << ". 이름: " << players[i].name << ", 직업: " << players[i].job << "\n" << endl;
+                        cout << "현재 스탯:" << endl;
+                        cout << "STR: " << players[i].stats[0] << endl;
+                        cout << "MEN: " << players[i].stats[1] << endl;
+                        cout << "TEC: " << players[i].stats[2] << endl;
+                        cout << "RES: " << players[i].stats[3] << endl;
+                        cout << "PER: " << players[i].stats[4] << endl;
+                        cout << "AGI: " << players[i].stats[5] << endl;
                     }
                 }
                 cout << "\n선택할 캐릭터 번호: ";
@@ -63,25 +70,6 @@ GameCharacter* new_game(vector<GameCharacter>& players) {
                     GameCharacter newChar(&globalMap, color[i]);
 
                     customize_character(newChar);
-                    
-                    cout << "\n=== 직업 선택 ===" << endl;
-                    cout << "1. 광부 (STR 특화)" << endl;
-                    cout << "2. 교주 (MEN 특화)" << endl;
-                    cout << "3. 해커 (TEC 특화)" << endl;
-                    cout << "4. 의사 (RES 특화)" << endl;
-                    cout << "5. 연설가 (PER 특화)" << endl;
-                    cout << "6. 암살자 (AGI 특화)" << endl;
-                    int jobChoice = get_valid_input(1, 6, "직업을 선택하세요: ");
-                    switch(jobChoice) {
-                        case 1: newChar.job = "광부"; newChar.stats = {100, 30, 80, 70, 50, 40}; break;
-                        case 2: newChar.job = "교주"; newChar.stats = {60, 100, 40, 30, 60, 90}; break;
-                        case 3: newChar.job = "해커"; newChar.stats = {80, 50, 60, 50, 90, 60}; break;
-                        case 4: newChar.job = "의사"; newChar.stats = {100, 30, 80, 70, 50, 40}; break;
-                        case 5: newChar.job = "연설가"; newChar.stats = {60, 100, 40, 30, 60, 90}; break;
-                        case 6: newChar.job = "암살자"; newChar.stats = {80, 50, 60, 50, 90, 60}; break;
-                    }
-                    cout << "\n" << newChar.job << "를 선택했습니다!" << endl;
-                    
                     players[i] = newChar;
                     cout << "캐릭터가 생성되었습니다!\n";;
                     created = true;
