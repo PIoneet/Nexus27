@@ -1,0 +1,10 @@
+# Simple skin-tone material for human mesh
+
+newmtl Skin
+
+Ka 1.0 0.8 0.7      # Ambient color (light skin tone)
+Kd 1.0 0.8 0.7      # Diffuse color (light skin tone)
+Ks 0.2 0.2 0.2      # Specular color (subtle shine)
+Ns 10.0             # Specular exponent (low shininess)
+d 1.0               # Opacity (fully opaque)
+illum 2             # Illumination model (diffuse and specular)

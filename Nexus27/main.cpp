@@ -1,6 +1,8 @@
+#define TINYOBJLOADER_IMPLEMENTATION 
 #include <iostream>
 #include <vector>
 #include <windows.h>
+#include <fstream>
 #include "game_ui.h"
 #include "game_map.h"
 #include "character.h"
@@ -10,7 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <fstream>
+#include "tiny_obj_loader.h"
 
 using namespace std;
 GameState gameState = READY; //전역 변수로 설정
@@ -30,6 +32,74 @@ int main() {
     // 한글 출력을 위한 콘솔 코드페이지 설정
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
+
+    vector<float> vertices; //VBO에 바인당할 정점 버퍼
+    vector<unsigned int> indices; //EBO에 바인딩할 인덱스 버퍼
+    std::string inputfile = "./vertex/FinalBaseMesh.obj"; // 경로 저장
+    tinyobj::ObjReaderConfig reader_config; 
+    reader_config.mtl_search_path = "./vertex/FinalBaseMesh.mtl";
+
+    tinyobj::ObjReader reader; // 파싱하면 이 클래스 내부에 파싱된 데이터가 들어감.
+
+    if (!reader.ParseFromFile(inputfile, reader_config)) {
+        if (!reader.Error().empty()) {
+            std::cerr << "TinyObjReader: " << reader.Error(); //파싱 실패
+        }
+        exit(1);
+    }
+
+    if (!reader.Warning().empty()) {
+        std::cout << "TinyObjReader: " << reader.Warning();
+    }
+
+    auto& attrib = reader.GetAttrib(); //attrib 멤버 변수값 가져오기
+    auto& shapes = reader.GetShapes(); //face 면 정보 저장
+    auto& materials = reader.GetMaterials(); // 재질 텍스쳐 좌표같은거
+
+    // 모델 -> 삼각형 면들 수 -> 면의 꼭짓점 -> 정점 좌표, 노멀 좌표, 텍스쳐 좌표
+    for (size_t s = 0; s < shapes.size(); s++) { // 각 모델을 돌아본다.
+        // Loop over faces(polygon)
+        size_t index_offset = 0;
+        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+            size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]); //면의 꼭짓점 개수
+
+            // Loop over vertices in the face.
+            for (size_t v = 0; v < fv; v++) {
+            // access to vertex
+                tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v]; // ex) 1//2면 정점 인덱스 0이랑 노멀 인덱스 1를 구조체에 저장
+                indices.push_back(idx.vertex_index);
+                tinyobj::real_t vx = attrib.vertices[3*size_t(idx.vertex_index)+0];
+                tinyobj::real_t vy = attrib.vertices[3*size_t(idx.vertex_index)+1];
+                tinyobj::real_t vz = attrib.vertices[3*size_t(idx.vertex_index)+2];
+                
+                vertices.push_back(vx);
+                vertices.push_back(vy);
+                vertices.push_back(vz);
+
+                // Check if `normal_index` is zero or positive. negative = no normal data
+                if (idx.normal_index >= 0) {
+                    tinyobj::real_t nx = attrib.normals[3*size_t(idx.normal_index)+0];
+                    tinyobj::real_t ny = attrib.normals[3*size_t(idx.normal_index)+1];
+                    tinyobj::real_t nz = attrib.normals[3*size_t(idx.normal_index)+2];
+
+                    vertices.push_back(nx);
+                    vertices.push_back(ny);
+                    vertices.push_back(nz);
+                }
+                // Check if `texcoord_index` is zero or positive. negative = no texcoord data
+                if (idx.texcoord_index >= 0) { //index == -1이라 코드 넘어감
+                    tinyobj::real_t tx = attrib.texcoords[2*size_t(idx.texcoord_index)+0];
+                    tinyobj::real_t ty = attrib.texcoords[2*size_t(idx.texcoord_index)+1];
+
+                    vertices.push_back(tx);
+                    vertices.push_back(ty);
+                }
+            }
+            index_offset += fv; //v는 항상 0,1,2,3인데 다음 면으로 넘어가야 되니까
+        shapes[s].mesh.material_ids[f]; //.mtl 파일 위에서부터 순서대로 0,1,2...로 저장
+        //각 face의 재질 인덱스를 따로 배열에 저장해 추후 랜더링때 사용 가능.
+        }
+    }
 
 
 
@@ -134,7 +204,7 @@ int main() {
 
 
     unsigned int VAO, VBO, EBO;
-    setupTriangleBuffers(VAO, VBO, EBO);
+    setupTriangleBuffers(vertices, indices, VAO, VBO, EBO);
 
     glm::mat4 model = glm::mat4(1.0f); // 아래 코드의 순서로 이동을 먼저할지 회전을 먼저할지 결정 가능
     model = glm::translate(model, glm::vec3(1.0f, 2.0f, 0.0f)); // 이동 

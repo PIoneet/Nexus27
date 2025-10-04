@@ -1,3 +1,6 @@
 #pragma once
+#include <vector>
 
-void setupTriangleBuffers(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
+using namespace std;
+
+void setupTriangleBuffers(vector<float>& vertices, vector<unsigned int>& indices, unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
