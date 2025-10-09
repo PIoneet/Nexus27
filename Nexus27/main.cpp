@@ -35,6 +35,7 @@ int main() {
 
     vector<float> vertices; //VBO에 바인당할 정점 버퍼
     vector<unsigned int> indices; //EBO에 바인딩할 인덱스 버퍼
+    vector<unsigned int> material;
     std::string inputfile = "./vertex/FinalBaseMesh.obj"; // 경로 저장
     tinyobj::ObjReaderConfig reader_config; 
     reader_config.mtl_search_path = "./vertex/FinalBaseMesh.mtl";
@@ -54,7 +55,7 @@ int main() {
 
     auto& attrib = reader.GetAttrib(); //attrib 멤버 변수값 가져오기
     auto& shapes = reader.GetShapes(); //face 면 정보 저장
-    auto& materials = reader.GetMaterials(); // 재질 텍스쳐 좌표같은거
+    //auto& materials = reader.GetMaterials(); // 재질 텍스쳐 좌표같은거
 
     // 모델 -> 삼각형 면들 수 -> 면의 꼭짓점 -> 정점 좌표, 노멀 좌표, 텍스쳐 좌표
     for (size_t s = 0; s < shapes.size(); s++) { // 각 모델을 돌아본다.
@@ -96,8 +97,8 @@ int main() {
                 }
             }
             index_offset += fv; //v는 항상 0,1,2,3인데 다음 면으로 넘어가야 되니까
-        shapes[s].mesh.material_ids[f]; //.mtl 파일 위에서부터 순서대로 0,1,2...로 저장
-        //각 face의 재질 인덱스를 따로 배열에 저장해 추후 랜더링때 사용 가능.
+        material.push_back(shapes[s].mesh.material_ids[f]); //.mtl 파일 위에서부터 순서대로 0,1,2...로 저장
+        //각 face의 재질 인덱스를 따로 배열에 저장해 프래그먼트 셰이더에 전달.
         }
     }
 
@@ -126,8 +127,7 @@ int main() {
             }
         }
         else if (gameState == INTRO) {
-            system("cls"); // 화면 지우기
-            game_intro();
+            system("cls");
 
             while(gameState == INTRO) {
                 game_play(*currentPlayer); // 객체가 필요하니까 *주소값
@@ -205,6 +205,7 @@ int main() {
 
     unsigned int VAO, VBO, EBO;
     setupTriangleBuffers(vertices, indices, VAO, VBO, EBO);
+    
 
     glm::mat4 model = glm::mat4(1.0f); // 아래 코드의 순서로 이동을 먼저할지 회전을 먼저할지 결정 가능
     model = glm::translate(model, glm::vec3(1.0f, 2.0f, 0.0f)); // 이동 

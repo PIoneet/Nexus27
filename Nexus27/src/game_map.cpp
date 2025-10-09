@@ -102,7 +102,13 @@ void GameMap::displayMap(string& color){
                     setColor(cout, color);
                     cout << "◆ " << termcolor::reset;
             } else if (map[i][j].isAccessible) {
-                cout << map[i][j].symbol << " ";
+                if(map[i][j].color == "white") {
+                    cout << map[i][j].symbol << " ";
+                }
+                else{
+                    setColor(cout, map[i][j].color);
+                    cout << map[i][j].symbol << " "<< termcolor::reset;
+                }
             } else {
                 cout << "  "; // 빈 공간
             }
@@ -140,6 +146,9 @@ void GameMap::movePlayer(char direction) {
     }
     
     if (isValidMove(newX, newY)) {
+        cout<<playerX<<" "<<playerY<<endl;
+        setTileColor(playerX, playerY, "green"); // 이전 위치를 녹색으로 변경
+        
         playerX = newX;
         playerY = newY;
         cout << "이동했습니다!" << endl;
@@ -173,24 +182,19 @@ int GameMap::getPlayerY(){
     return playerY;
 }
 
-MapTile* GameMap::getCurrentTile() { // 82줄에서 단순히 출력 목적이라 MapTile 반환도 가능은하다.
+MapTile* GameMap::getCurrentTile() {
     return &map[playerY][playerX];
 }
 
+
 void GameMap::setTileColor(int x, int y, const string& color) {
-     map[x][y].color = color;
-}
-
-
-void GameMap::setPlayerTileColor(int x, int y, const string& color) {
-    setTileColor(x, y, color);
+     map[y][x].color = color;
 }
 
 
 pair<int, int> operation_map(GameCharacter& player) {
 
     char input;
-    player.opMap->setPlayerTileColor(player.pos.first, player.pos.second, player.color);
     player.opMap->setPlayerPosition(player.pos.first, player.pos.second);
     
     while (true) {

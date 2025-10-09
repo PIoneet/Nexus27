@@ -4,7 +4,7 @@
 #include <iostream>
 
 using namespace std;
-string color[COLOR_SIZE] = {"red", "blue", "green"};
+string color[COLOR_SIZE] = {"red", "magenta", "cyan"};
 
 int start_game_ui() {
     system("cls"); 
@@ -39,6 +39,7 @@ GameCharacter* new_game(vector<GameCharacter>& players) {
                 cout << "\n생성된 캐릭터 목록:\n" << endl;
                 for (size_t i = 0; i < players.size(); ++i) {
                     if (!players[i].name.empty()) {
+                        cout << endl;
                         cout << i+1 << ". 이름: " << players[i].name << ", 직업: " << players[i].job << "\n" << endl;
                         cout << "현재 스탯:" << endl;
                         cout << "STR: " << players[i].stats[0] << endl;
@@ -47,6 +48,7 @@ GameCharacter* new_game(vector<GameCharacter>& players) {
                         cout << "RES: " << players[i].stats[3] << endl;
                         cout << "PER: " << players[i].stats[4] << endl;
                         cout << "AGI: " << players[i].stats[5] << endl;
+                        
                     }
                 }
                 cout << "\n선택할 캐릭터 번호: ";
@@ -102,17 +104,6 @@ void help() {
 void exit_game() {
     cout << "게임을 종료합니다." << endl;
 }   
-
-void game_intro() {
-    cout << "\n========================================" << endl;
-    cout << "Welcome to our World called Menzo" << endl;
-    cout << "========================================" << endl;
-    cout << "어둠 속에서 깨어난 당신..." << endl;
-    cout << "이곳은 신비로운 던전의 입구입니다." << endl;
-    cout << "용기를 내어 모험을 시작해보세요!" << endl;
-    cout << "========================================" << endl;
-    //대사 넘어갈떄마다 음성 소리 나오는 것도 재밌을듯.
-}
 
 // 단일 캐릭터 플레이용 오버로드
 void game_play(GameCharacter& gamePlayer) {

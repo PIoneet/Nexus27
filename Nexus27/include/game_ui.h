@@ -10,7 +10,6 @@ GameCharacter* new_game(vector<GameCharacter>& players);
 void load_game();
 void help();    
 void exit_game();
-void game_intro();
 void game_play(GameCharacter& gamePlayer);
 
 

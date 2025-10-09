@@ -34,7 +34,6 @@ public:
     int getPlayerY();
     MapTile* getCurrentTile();
     void setTileColor(int x, int y, const std::string& color);
-    void setPlayerTileColor(int x, int y, const std::string& color);
 };
 
 
