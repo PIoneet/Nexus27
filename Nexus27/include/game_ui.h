@@ -2,7 +2,7 @@
 #define GAME_UI_H
 
 #include "game_types.h"
-#define COLOR_SIZE 3
+#define COLOR_SIZE 2
 
 // 게임 UI 관련 함수들
 int start_game_ui();

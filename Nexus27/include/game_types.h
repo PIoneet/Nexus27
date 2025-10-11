@@ -3,9 +3,13 @@
 
 #include <string>
 #include <array>
-#include "game_map.h"
+#include <utility>
+#include <vector>
+#include <string>
+#include <windows.h>
 
 using namespace std;
+
 
 enum GameState {
     READY,
@@ -14,24 +18,56 @@ enum GameState {
     EXIT
 };
 
-struct GameCharacter {
+class MapTile {
+public:
+    string symbol;
+    string color; 
+    vector<float> stats; //+(오른쪽) , -(왼쪽), x(윗쪽), /(아랫쪽)
+    bool isAccessible;
+    pair<int, int> position; //게임 캐릭터의 현재 위치
+    //주인공 객체 생성자
+    MapTile() 
+        : symbol("◆ "), color("white"), stats({1.0, -1.0, 1.0, -1.0}), isAccessible(true), position({4, 4}) {}
+    //모든 타일 객체 생성자
+    MapTile(string symbol, string color, vector<float> stats, bool isAccessible, pair<int, int> position) 
+        : symbol(symbol), color(color), stats(stats), isAccessible(isAccessible), position(position) {}
+    //보스 객체 생성자
+    MapTile(string color, pair<int, int> position) 
+        : symbol("★"), color(color), stats({0, 0, 0, 0}), isAccessible(true), position(position) {}
+};
+
+
+class GameMap: public MapTile {
+private:
+    vector<vector<MapTile>> map; // vector 하나 둘러싼게 1차원 배열(한줄) 2개 둘러싼게 2차원 배열(여러줄)
+    int playerX, playerY; //이거는 플레이어 좌표
+    int mapWidth, mapHeight;
+    
+public:
+    GameMap();
+    void initializeMap();
+    void displayMap(const string& symbol, const string& color);
+    void movePlayer(char direction);
+    bool isValidMove(int x, int y);
+    void setPlayerPosition(int x, int y);
+    int getPlayerX();
+    int getPlayerY();
+    MapTile* getCurrentTile();
+    void setTileColor(int x, int y, const std::string& color);
+};
+
+
+
+class GameCharacter : public MapTile {
+public:
     string name;
-    string job;
-    array<int, 6> stats; // STR, MEN, TEC, RES, PER, AGI
-    GameMap* opMap; //3명의 player가 참조할 하나의 opMap
-    string color; // 캐릭터 개인의 색깔(구별 용도)
-    pair<int, int> pos; //게임 캐릭터의 현재 위치
-
-    GameCharacter(string name, string job, array<int, 6> stats, GameMap* opMap, string color, pair<int, int> pos)
-        : name(name), job(job), stats(stats), opMap(opMap), color(color), pos(pos) {}
-        //그니까 매번 opMap 초기화할거면 참조 쓰고 아니면 null 가능한 포인터
-        //(객체 생성시 인수로 넣을것들) : (인수 안넣을거면 여기서 미리 초기화)
-        //opMap은 포인터 변수를 받겠다는 뜻이다. 
-        GameCharacter (GameMap* opMap)
-        : name(""), job(""), stats({20,20,20,20,20,20}), opMap(opMap), color(""), pos({4, 4}) {}
-
-        GameCharacter (GameMap* opMap, string color)
-        : name(""), job(""), stats({20,20,20,20,20,20}), opMap(opMap), color(color), pos({4, 4}) {}
+    int currentPower; //현재 방향 스탯
+    int totalPower; //스탯 총합 
+    GameMap* opMap; //2명의 player가 참조할 하나의 opMap
+    GameCharacter(string name, GameMap* opMap)
+        : MapTile(), name(name), currentPower(0), totalPower(0), opMap(opMap) {}
+    GameCharacter (GameMap* opMap)
+        : MapTile(), name(""), currentPower(0), totalPower(0), opMap(opMap) {}
 };
 
 extern GameState gameState;

@@ -5,6 +5,6 @@
 
 // 캐릭터 관련 함수들
 void customize_character(GameCharacter& character);
-vector<int> random_partition(int total, int parts);
+vector<float> random_generate(int parts);
 
 #endif // CHARACTER_H

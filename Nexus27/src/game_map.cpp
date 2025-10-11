@@ -1,8 +1,8 @@
-#include "game_map.h"
 #include "game_types.h"
 #include <iostream>
 #include <iomanip>
 #include "termcolor.hpp"
+#include "character.h"
 
 using namespace std;
 
@@ -19,9 +19,11 @@ ostream& setColor(ostream& os, const string& color) {
 }
 
 
-GameMap::GameMap() : playerX(4), playerY(4), mapWidth(9), mapHeight(9) {
-    initializeMap();
-}
+GameMap::GameMap() 
+    : playerX(4), playerY(4), mapWidth(9), mapHeight(9) 
+    {
+        initializeMap();
+    }
 
 void GameMap::initializeMap() {
     // 9x9 그리드 초기화 (빈 공간은 접근 불가능)
@@ -30,7 +32,8 @@ void GameMap::initializeMap() {
     // 모든 타일을 기본적으로 접근 불가능하게 설정
     for (int i = 0; i < mapHeight; i++) {
         for (int j = 0; j < mapWidth; j++) {
-            map[i][j] = {0, " ", "빈 공간", "white", false };
+            vector<float> random_stats = random_generate(4);
+            map[i][j] = MapTile("■", "white", random_stats, false, {i, j}); //여기서 모든 타일에 random 타일.
         }
     }
     
@@ -46,53 +49,47 @@ void GameMap::initializeMap() {
     //    #####     (5개) - row 7
     //     ###      (3개) - row 8
     // 총 타일: 3+5+7+9+9+9+7+5+3 = 57개
-
-    int tileId = 1;
-    // Row 0: 3개 타일 (중앙에 배치)
     for (int j = 3; j <= 5; j++) {
-        map[0][j] = {tileId++, "■", "던전 입구", "white", true};
+        map[0][j].isAccessible = true;
     }
     // Row 1: 5개 타일
     for (int j = 2; j <= 6; j++) {
-        map[1][j] = {tileId++, "■", "던전 통로", "white", true};
+        map[1][j].isAccessible = true;
     }
     // Row 2: 7개 타일
     for (int j = 1; j <= 7; j++) {
-        map[2][j] = {tileId++, "■", "던전 방", "white", true};
+        map[2][j].isAccessible = true;
     }
     // Row 3: 9개 타일 (첫 번째)
     for (int j = 0; j <= 8; j++) {
-        map[3][j] = {tileId++, "■", "던전 상층부", "white", true};
+        map[3][j].isAccessible = true;
     }
     // Row 4: 9개 타일 (중앙)
     for (int j = 0; j <= 8; j++) {
-        map[4][j] = {tileId++, "■", "던전 중앙부", "white", true};
+        map[4][j].isAccessible = true;
     }
     // Row 5: 9개 타일 (세 번째)
     for (int j = 0; j <= 8; j++) {
-        map[5][j] = {tileId++, "■", "던전 하층부", "white", true};
+        map[5][j].isAccessible = true;
     }
     // Row 6: 7개 타일
     for (int j = 1; j <= 7; j++) {
-        map[6][j] = {tileId++, "■", "던전 방", "white", true};
+        map[6][j].isAccessible = true;
     }
     // Row 7: 5개 타일
     for (int j = 2; j <= 6; j++) {
-        map[7][j] = {tileId++, "■", "던전 통로", "white", true};
+        map[7][j].isAccessible = true;
     }
     // Row 8: 3개 타일
     for (int j = 3; j <= 5; j++) {
-        map[8][j] = {tileId++, "■", "던전 출구", "white", true};
+        map[8][j].isAccessible = true;
     }
-    // 플레이어 시작 위치 (중앙)
-    setPlayerPosition(4, 4); // 가로 중앙, 세로 중앙
 }
 
-void GameMap::displayMap(string& color){
+void GameMap::displayMap(const string& symbol, const string& color){
     system("cls"); // 화면 지우기
     cout << "========== Operation Map ==========" << endl;
     cout << "현재 위치: (" << playerX << ", " << playerY << ")" << endl;
-    cout << "특이사항: " << getCurrentTile()->description << endl;
     cout << "\n";
     for (int i = 0; i < mapHeight; i++) {
         cout << "  "; // 들여쓰기
@@ -100,7 +97,7 @@ void GameMap::displayMap(string& color){
                 if (i == playerY && j == playerX) {
                     // 문자열로 색상 지정하여 플레이어 위치 출력
                     setColor(cout, color);
-                    cout << "◆ " << termcolor::reset;
+                    cout << symbol << termcolor::reset;
             } else if (map[i][j].isAccessible) {
                 if(map[i][j].color == "white") {
                     cout << map[i][j].symbol << " ";
@@ -120,6 +117,7 @@ void GameMap::displayMap(string& color){
 }
 
 void GameMap::movePlayer(char direction) {
+    int stateIndex; //현재 진행하는 방향의 인덱스 stats == currentPower
     int newX = playerX;
     int newY = playerY;
     
@@ -193,13 +191,12 @@ void GameMap::setTileColor(int x, int y, const string& color) {
 
 
 pair<int, int> operation_map(GameCharacter& player) {
-
     char input;
-    player.opMap->setPlayerPosition(player.pos.first, player.pos.second);
-    
+    player.opMap->setPlayerPosition(player.position.first, player.position.second);
+
     while (true) {
-        
-        player.opMap->displayMap(player.color);
+
+        player.opMap->displayMap(player.symbol, player.color);
 
         cout << "\n명령을 입력하세요: ";
         cin >> input;

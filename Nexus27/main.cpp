@@ -1,10 +1,8 @@
 #define TINYOBJLOADER_IMPLEMENTATION 
 #include <iostream>
-#include <vector>
-#include <windows.h>
 #include <fstream>
 #include "game_ui.h"
-#include "game_map.h"
+#include "game_types.h"
 #include "character.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -17,7 +15,7 @@
 using namespace std;
 GameState gameState = READY; //전역 변수로 설정
 GameMap globalMap;
-vector<GameCharacter> player(3, GameCharacter(&globalMap));
+vector<GameCharacter> player(2, GameCharacter(&globalMap));
 GameCharacter* currentPlayer = nullptr;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) //여러 창을 사용하는 경우 창을 구분하기 위해 주소를 인자로 받음.
@@ -103,8 +101,7 @@ int main() {
     }
 
 
-
-    //위 코드로 player 내부에 단일 객체 3개 만들고 생성자로 초기화까지.
+    //게임 UI
     int choice = 0;
     while (gameState != EXIT) {
         if (gameState == READY) {

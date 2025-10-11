@@ -2,9 +2,10 @@
 #include "input_utils.h"
 #include "character.h"
 #include <iostream>
+#include <vector>
 
 using namespace std;
-string color[COLOR_SIZE] = {"red", "magenta", "cyan"};
+string color[COLOR_SIZE] = {"blue", "magenta"};
 
 int start_game_ui() {
     system("cls"); 
@@ -40,14 +41,13 @@ GameCharacter* new_game(vector<GameCharacter>& players) {
                 for (size_t i = 0; i < players.size(); ++i) {
                     if (!players[i].name.empty()) {
                         cout << endl;
-                        cout << i+1 << ". 이름: " << players[i].name << ", 직업: " << players[i].job << "\n" << endl;
+                        cout << i+1 << ". 이름: " << players[i].name << "\n" << endl;
                         cout << "현재 스탯:" << endl;
-                        cout << "STR: " << players[i].stats[0] << endl;
-                        cout << "MEN: " << players[i].stats[1] << endl;
-                        cout << "TEC: " << players[i].stats[2] << endl;
-                        cout << "RES: " << players[i].stats[3] << endl;
-                        cout << "PER: " << players[i].stats[4] << endl;
-                        cout << "AGI: " << players[i].stats[5] << endl;
+                        cout << "+(오른쪽): " << players[i].stats[0] << endl;
+                        cout << "-(왼쪽): " << players[i].stats[1] << endl;
+                        cout << "x(윗쪽): " << players[i].stats[2] << endl;
+                        cout << "/(아랫쪽): " << players[i].stats[3] << endl;
+                        cout << "-------------------" << endl;
                         
                     }
                 }
@@ -69,11 +69,11 @@ GameCharacter* new_game(vector<GameCharacter>& players) {
             bool created = false;
             for (size_t i = 0; i < players.size(); ++i) {
                 if (players[i].name.empty()) {
-                    GameCharacter newChar(&globalMap, color[i]);
-
+                    GameCharacter newChar(&globalMap);
                     customize_character(newChar);
+                    newChar.color = color[i];
                     players[i] = newChar;
-                    cout << "캐릭터가 생성되었습니다!\n";;
+                    cout << "캐릭터가 생성되었습니다!\n";
                     created = true;
                     break;
                 }
@@ -111,29 +111,23 @@ void game_play(GameCharacter& gamePlayer) {
     cout << "=== 게임 플레이 ===" << endl;
     cout << "\n플레이어: " << gamePlayer.name << "\n" << endl;
     cout << "1. 탐색 진행" << endl;
-    cout << "2. 인벤토리 확인" << endl;
-    cout << "3. 상태 확인" << endl;
-    cout << "4. 캐릭터 변경" << endl;
-    cout << "5. 게임 종료\n" << endl;
-    int choice = get_valid_input(1, 5, "선택하세요: ");
+    cout << "2. 상태 확인" << endl;
+    cout << "3. 캐릭터 변경" << endl;
+    cout << "4. 게임 종료\n" << endl;
+    int choice = get_valid_input(1, 4, "선택하세요: ");
     system("cls");
     switch(choice) {
-        
         case 1:
-            gamePlayer.pos = operation_map(gamePlayer);
-
+            gamePlayer.position = operation_map(gamePlayer);
             break;
         case 2:
-            cout << "인벤토리 기능은 아직 구현되지 않았습니다." << endl;
-            break;
-        case 3:
             cout << "상태 확인 기능은 아직 구현되지 않았습니다." << endl;
             break;
-        case 4:
+        case 3:
             cout << "캐릭터 변경하기." << endl;
             currentPlayer = new_game(player);
             break;
-        case 5:
+        case 4:
             cout << "게임을 종료합니다." << endl;
             gameState = EXIT;
             break;

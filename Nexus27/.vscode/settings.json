@@ -58,5 +58,6 @@
         "cinttypes": "cpp",
         "map": "cpp",
         "set": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "C:/createCode/Nexus27/include/glm"
 }

@@ -24,7 +24,7 @@ $(TARGET): $(OBJECTS)
 
 # Individual object files
 #아래에 있는 코드들은 이를 테면 main.cpp 소스코드가 변경되거나 연결된 헤더들이 변경되면 다시 컴파일하겠다는 의미다.
-main.o: main.cpp $(INCDIR)/game_ui.h $(INCDIR)/game_map.h $(INCDIR)/character.h $(INCDIR)/glad/glad.h $(INCDIR)/GLFW/glfw3.h $(INCDIR)/triangle_buffer.h $(INCDIR)/glm/glm.hpp $(INCDIR)/glm/gtc/matrix_transform.hpp $(INCDIR)/glm/gtc/type_ptr.hpp $(INCDIR)/tiny_obj_loader.h
+main.o: main.cpp $(INCDIR)/game_ui.h $(INCDIR)/game_types.h $(INCDIR)/character.h $(INCDIR)/glad/glad.h $(INCDIR)/GLFW/glfw3.h $(INCDIR)/triangle_buffer.h $(INCDIR)/glm/glm.hpp $(INCDIR)/glm/gtc/matrix_transform.hpp $(INCDIR)/glm/gtc/type_ptr.hpp $(INCDIR)/tiny_obj_loader.h
 	$(CXX) $(CXXFLAGS) -c main.cpp
 
 $(SRCDIR)/game_ui.o: $(SRCDIR)/game_ui.cpp $(INCDIR)/game_ui.h $(INCDIR)/input_utils.h $(INCDIR)/character.h
@@ -36,7 +36,7 @@ $(SRCDIR)/character.o: $(SRCDIR)/character.cpp $(INCDIR)/character.h $(INCDIR)/i
 $(SRCDIR)/input_utils.o: $(SRCDIR)/input_utils.cpp $(INCDIR)/input_utils.h
 	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/input_utils.cpp -o $(SRCDIR)/input_utils.o
 
-$(SRCDIR)/game_map.o: $(SRCDIR)/game_map.cpp $(INCDIR)/game_map.h $(INCDIR)/game_types.h $(INCDIR)/termcolor.hpp
+$(SRCDIR)/game_map.o: $(SRCDIR)/game_map.cpp $(INCDIR)/game_types.h $(INCDIR)/termcolor.hpp
 	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/game_map.cpp -o $(SRCDIR)/game_map.o
 
 $(SRCDIR)/glad.o: $(SRCDIR)/glad.c $(INCDIR)/glad/glad.h $(INCDIR)/KHR/khrplatform.h
