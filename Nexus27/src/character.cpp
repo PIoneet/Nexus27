@@ -19,10 +19,10 @@ void customize_character(GameCharacter& character) {
     }
 
     cout << "\n현재 스탯:" << endl;
-    cout << "+(오른쪽): " << character.stats[0] << endl;
-    cout << "-(왼쪽): " << character.stats[1] << endl;
-    cout << "x(윗쪽): " << character.stats[2] << endl;
-    cout << "/(아랫쪽): " << character.stats[3] << endl;
+    cout << "x(윗쪽): " << character.stats[0] << endl;
+    cout << "/(아랫쪽): " << character.stats[1] << endl;
+    cout << "-(왼쪽): " << character.stats[2] << endl;
+    cout << "+(오른쪽): " << character.stats[3] << endl;
 
     cout << "\n랜덤으로 스탯을 조정 가능합니다." << endl;
     vector<float> random_stats;
@@ -44,11 +44,11 @@ void customize_character(GameCharacter& character) {
 
     cout << "\n최종 전투력 수치:" << endl;
     cout << "이름: " << character.name << endl;
-    cout << "+(오른쪽): " << character.stats[0] << endl;
-    cout << "-(왼쪽): " << character.stats[1] << endl;
-    cout << "x(윗쪽): " << character.stats[2] << endl;
-    cout << "/(아랫쪽): " << character.stats[3] << endl;
-    
+    cout << "x(윗쪽): " << character.stats[0] << endl;
+    cout << "/(아랫쪽): " << character.stats[1] << endl;
+    cout << "-(왼쪽): " << character.stats[2] << endl;
+    cout << "+(오른쪽): " << character.stats[3] << endl;
+
     cout << "\n캐릭터 커스터마이즈가 완료되었습니다!" << endl;
 }
 

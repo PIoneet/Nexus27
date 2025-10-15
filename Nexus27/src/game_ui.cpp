@@ -5,9 +5,10 @@
 #include <vector>
 
 using namespace std;
-string color[COLOR_SIZE] = {"blue", "magenta"};
+string color[COLOR_SIZE] = {"green", "magenta"};
 
 int start_game_ui() {
+    //이것도 삭제하는게 나을 것 같음 딱히 필요없음.
     system("cls"); 
     cout << "-----Nexus27-----" << endl;
     cout << "\n1. 새 게임" << endl;
@@ -43,10 +44,10 @@ GameCharacter* new_game(vector<GameCharacter>& players) {
                         cout << endl;
                         cout << i+1 << ". 이름: " << players[i].name << "\n" << endl;
                         cout << "현재 스탯:" << endl;
-                        cout << "+(오른쪽): " << players[i].stats[0] << endl;
-                        cout << "-(왼쪽): " << players[i].stats[1] << endl;
-                        cout << "x(윗쪽): " << players[i].stats[2] << endl;
-                        cout << "/(아랫쪽): " << players[i].stats[3] << endl;
+                        cout << "x(윗쪽): " << players[i].stats[0] << endl;
+                        cout << "/(아랫쪽): " << players[i].stats[1] << endl;
+                        cout << "-(왼쪽): "<< players[i].stats[2] << endl;
+                        cout << "+(오른쪽): " << players[i].stats[3] << endl;
                         cout << "-------------------" << endl;
                         
                     }
@@ -102,7 +103,7 @@ void help() {
 }
 
 void exit_game() {
-    cout << "게임을 종료합니다." << endl;
+    cout << "게임을 종료합니다." << endl;       
 }   
 
 // 단일 캐릭터 플레이용 오버로드
@@ -118,7 +119,7 @@ void game_play(GameCharacter& gamePlayer) {
     system("cls");
     switch(choice) {
         case 1:
-            gamePlayer.position = operation_map(gamePlayer);
+            gamePlayer.position = gamePlayer.opMap->operation_map(gamePlayer);
             break;
         case 2:
             cout << "상태 확인 기능은 아직 구현되지 않았습니다." << endl;

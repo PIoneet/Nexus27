@@ -15,7 +15,8 @@
 using namespace std;
 GameState gameState = READY; //전역 변수로 설정
 GameMap globalMap;
-vector<GameCharacter> player(2, GameCharacter(&globalMap));
+vector<GameCharacter> player{ GameCharacter(&globalMap), GameCharacter(&globalMap) };
+//vector<GameCharacter> player(2, GameCharacter(&globalMap));
 GameCharacter* currentPlayer = nullptr;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) //여러 창을 사용하는 경우 창을 구분하기 위해 주소를 인자로 받음.
@@ -45,10 +46,6 @@ int main() {
             std::cerr << "TinyObjReader: " << reader.Error(); //파싱 실패
         }
         exit(1);
-    }
-
-    if (!reader.Warning().empty()) {
-        std::cout << "TinyObjReader: " << reader.Warning();
     }
 
     auto& attrib = reader.GetAttrib(); //attrib 멤버 변수값 가져오기
@@ -109,6 +106,7 @@ int main() {
             
             switch(choice){
                 case 1: 
+                   //std::cout << "s1: " << (void*)&player[0] << ", s2: " << (void*)&player[1]  << std::endl;
                    currentPlayer = new_game(player);
                     break;
                 case 2:

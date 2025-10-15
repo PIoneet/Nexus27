@@ -1,6 +1,5 @@
 #ifndef GAME_TYPES_H
 #define GAME_TYPES_H
-
 #include <string>
 #include <array>
 #include <utility>
@@ -25,56 +24,64 @@ public:
     vector<float> stats; //+(오른쪽) , -(왼쪽), x(윗쪽), /(아랫쪽)
     bool isAccessible;
     pair<int, int> position; //게임 캐릭터의 현재 위치
+    int tileId;
     //주인공 객체 생성자
     MapTile() 
-        : symbol("◆ "), color("white"), stats({1.0, -1.0, 1.0, -1.0}), isAccessible(true), position({4, 4}) {}
+        : symbol("◆ "), color("red"), stats({1.0, -1.0, 1.0, -1.0}), isAccessible(true), position({4, 4}), tileId(0) {}
     //모든 타일 객체 생성자
-    MapTile(string symbol, string color, vector<float> stats, bool isAccessible, pair<int, int> position) 
-        : symbol(symbol), color(color), stats(stats), isAccessible(isAccessible), position(position) {}
+    MapTile(string symbol, string color, vector<float> stats, bool isAccessible, pair<int, int> position, int tileId) 
+        : symbol(symbol), color(color), stats(stats), isAccessible(isAccessible), position(position), tileId(tileId) {}
     //보스 객체 생성자
     MapTile(string color, pair<int, int> position) 
-        : symbol("★"), color(color), stats({0, 0, 0, 0}), isAccessible(true), position(position) {}
+        : symbol("★ "), color(color), stats({0, 0, 0, 0}), isAccessible(true), position(position), tileId(0) {}
 };
 
+class GameCharacter; // 전방 선언
 
-class GameMap: public MapTile {
-private:
+class GameMap{
+
+protected:
     vector<vector<MapTile>> map; // vector 하나 둘러싼게 1차원 배열(한줄) 2개 둘러싼게 2차원 배열(여러줄)
     int playerX, playerY; //이거는 플레이어 좌표
     int mapWidth, mapHeight;
     
 public:
-    GameMap();
+    GameMap()
+        : playerX(4), playerY(4), mapWidth(9), mapHeight(9) 
+        {
+            initializeMap();
+        }
+    
     void initializeMap();
-    void displayMap(const string& symbol, const string& color);
-    void movePlayer(char direction);
+    void displayMap(const GameCharacter& player);
+    void movePlayer(GameCharacter& player, char direction);
+    void movePlayer(GameCharacter& player, int direction);
     bool isValidMove(int x, int y);
     void setPlayerPosition(int x, int y);
     int getPlayerX();
     int getPlayerY();
     MapTile* getCurrentTile();
+    void calculatePower(GameCharacter& player, int stateIndex);
     void setTileColor(int x, int y, const std::string& color);
+    pair<int, int> operation_map(GameCharacter& player);
+    void operation_map(GameCharacter& player, int id);
 };
-
 
 
 class GameCharacter : public MapTile {
 public:
     string name;
-    int currentPower; //현재 방향 스탯
-    int totalPower; //스탯 총합 
-    GameMap* opMap; //2명의 player가 참조할 하나의 opMap
-    GameCharacter(string name, GameMap* opMap)
-        : MapTile(), name(name), currentPower(0), totalPower(0), opMap(opMap) {}
+    float currentPower; //현재 방향 스탯
+    float totalPower; //스탯 총합 
+    GameMap* opMap; //2명의 플레이어가 참조할 하나의 opMap
     GameCharacter (GameMap* opMap)
         : MapTile(), name(""), currentPower(0), totalPower(0), opMap(opMap) {}
+
 };
 
 extern GameState gameState;
 extern GameMap globalMap;
 extern vector<GameCharacter> player;
 extern GameCharacter* currentPlayer;
-
-pair<int, int> operation_map(GameCharacter& player);
 
 #endif // GAME_TYPES_H
