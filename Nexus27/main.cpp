@@ -17,7 +17,6 @@ GameState gameState = READY; //전역 변수로 설정
 GameMap globalMap;
 vector<GameCharacter> player{ GameCharacter(&globalMap), GameCharacter(&globalMap) };
 //vector<GameCharacter> player(2, GameCharacter(&globalMap));
-GameCharacter* currentPlayer = nullptr;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) //여러 창을 사용하는 경우 창을 구분하기 위해 주소를 인자로 받음.
 {
@@ -99,39 +98,23 @@ int main() {
 
 
     //게임 UI
-    int choice = 0;
     while (gameState != EXIT) {
         if (gameState == READY) {
-            choice = start_game_ui();
-            
-            switch(choice){
-                case 1: 
-                   //std::cout << "s1: " << (void*)&player[0] << ", s2: " << (void*)&player[1]  << std::endl;
-                   currentPlayer = new_game(player);
-                    break;
-                case 2:
-                    load_game();
-                    break;
-                case 3:
-                    help();
-                    break;
-                case 4:
-                    exit_game();
-                    gameState = EXIT;
-                    break;
-            }
+            new_game(player);
         }
         else if (gameState == INTRO) {
             system("cls");
-
             while(gameState == INTRO) {
-                game_play(*currentPlayer); // 객체가 필요하니까 *주소값
+                game_play(player);
             }
 
         }
     }
     
 
+    
+    
+    //openGL 실습 시작 부분
     if (!glfwInit())
     {
         cout << "Failed to initialize GLFW" << endl;
@@ -151,7 +134,6 @@ int main() {
         cout << "Failed to open GLFW window" << endl;
         return -1;
     }
-    
 
     glfwMakeContextCurrent(window); // 랜더링(화면에 그리기)을 할 윈도우를 지정하는 작업
 

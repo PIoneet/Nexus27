@@ -27,6 +27,7 @@ void GameMap::initializeMap() {
         for (int j = 0; j < mapWidth; j++) {
             vector<float> random_stats = random_generate(4);
             map[i][j] = MapTile("■", "white", random_stats, false, {i, j}, 0); //여기서 모든 타일에 random 타일.
+        
         }
     }
     
@@ -299,19 +300,21 @@ pair<int, int> GameMap::operation_map(GameCharacter& player) {
 
 
 void GameMap::operation_map(GameCharacter& player, int id) {
-
+    int input;
     player.opMap->setPlayerPosition(player.position.first, player.position.second);
     player.opMap->displayMap(player);
     // 조작 설명을 여기로 옮기는게 나을 것 같기도 하고
-
     cout << "\n2번 플레이어 조작: ↑(x위쪽), ↓(/아랫쪽), ←(-왼쪽), →(+오른쪽)" << endl;
-    cout << "\n명령을 입력하세요: ";
-    int input = _getch();
-    if(input == 224) { // 특수 키(화살4표 키 등)의 경우
-        input = _getch(); // 실제 키 코드 읽기
+    while(true){
+        cout << "\n명령을 입력하세요: ";
+        input = _getch();
+        if(input == 224) { // 특수 키(화살4표 키 등)의 경우
+            input = _getch(); // 실제 키 코드 읽기
+        }
+        player.opMap->movePlayer(player, input);
+        if(input == 72 || input == 80 || input == 75 || input == 77) break;
     }
 
-    player.opMap->movePlayer(player, input);
     player.position = {player.opMap->getPlayerX(), player.opMap->getPlayerY()};
     player.opMap->displayMap(player);
 }
