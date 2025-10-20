@@ -21,19 +21,16 @@ class MapTile {
 public:
     string symbol;
     string color; 
-    vector<float> stats; //+(오른쪽) , -(왼쪽), x(윗쪽), /(아랫쪽)
+    int power;
     bool isAccessible;
     pair<int, int> position; //게임 캐릭터의 현재 위치
     int tileId;
     //주인공 객체 생성자
     MapTile() 
-        : symbol("◆ "), color("red"), stats({1.0, -1.0, 1.0, -1.0}), isAccessible(true), position({4, 4}), tileId(0) {}
+        : symbol("◆ "), color("red"), power(0), isAccessible(true), position({4, 4}), tileId(0) {}
     //모든 타일 객체 생성자
-    MapTile(string symbol, string color, vector<float> stats, bool isAccessible, pair<int, int> position, int tileId) 
-        : symbol(symbol), color(color), stats(stats), isAccessible(isAccessible), position(position), tileId(tileId) {}
-    //보스 객체 생성자
-    MapTile(string color, pair<int, int> position) 
-        : symbol("★ "), color(color), stats({0, 0, 0, 0}), isAccessible(true), position(position), tileId(0) {}
+    MapTile(string symbol, string color, int power, bool isAccessible, pair<int, int> position, int tileId) 
+        : symbol(symbol), color(color), power(power), isAccessible(isAccessible), position(position), tileId(tileId) {}
 };
 
 class GameCharacter; // 전방 선언
@@ -53,7 +50,7 @@ public:
         }
     
     void initializeMap();
-    void displayMap(const GameCharacter& player);
+    void displayMap(const vector<GameCharacter>& players);
     void movePlayer(GameCharacter& player, char direction);
     void movePlayer(GameCharacter& player, int direction);
     bool isValidMove(int x, int y);
@@ -63,8 +60,8 @@ public:
     MapTile* getCurrentTile();
     void calculatePower(GameCharacter& player, int stateIndex);
     void setTileColor(int x, int y, const std::string& color);
-    pair<int, int> operation_map(GameCharacter& player);
-    void operation_map(GameCharacter& player, int id);
+    pair<int, int> operation_map(vector<GameCharacter>& players);
+    void operation_map(vector<GameCharacter>& players, int id);
 };
 
 
@@ -74,8 +71,10 @@ public:
     float currentPower; //현재 방향 스탯
     float totalPower; //스탯 총합 
     GameMap* opMap; //2명의 플레이어가 참조할 하나의 opMap
+    vector<int> stats; //+(오른쪽) , -(왼쪽), x(윗쪽), /(아랫쪽)
+
     GameCharacter (GameMap* opMap)
-        : MapTile(), name(""), currentPower(0), totalPower(0), opMap(opMap) {}
+        : MapTile(), name(""), currentPower(0), totalPower(0), opMap(opMap), stats({1, -1, 1, -1}) {}
 
 };
 

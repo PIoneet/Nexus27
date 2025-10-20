@@ -21,12 +21,11 @@ ostream& setColor(ostream& os, const string& color) {
 void GameMap::initializeMap() {
     // 9x9 그리드 초기화 (빈 공간은 접근 불가능)
     map.resize(mapHeight, vector<MapTile>(mapWidth));
-    
     // 모든 타일을 기본적으로 접근 불가능하게 설정
     for (int i = 0; i < mapHeight; i++) {
+        vector<int> random_stats = random_generate(mapWidth);
         for (int j = 0; j < mapWidth; j++) {
-            vector<float> random_stats = random_generate(4);
-            map[i][j] = MapTile("■", "white", random_stats, false, {i, j}, 0); //여기서 모든 타일에 random 타일.
+            map[i][j] = MapTile("■", "white", 0, false, {i, j}, 0);
         
         }
     }
@@ -80,22 +79,24 @@ void GameMap::initializeMap() {
     }
 }
 
-void GameMap::displayMap(const GameCharacter& player) {
+void GameMap::displayMap(const vector<GameCharacter>& players) {
     system("cls"); // 화면 지우기
     cout << "================ Operation Map ================" << endl;
     cout << "현재 위치: (" << playerX << ", " << playerY << ")" << endl;
     cout << "\n";
     for (int i = 0; i < mapHeight; i++) {
+        int spacing = 6;
+        bool firstAccess = true;
         cout << "  "; // 들여쓰기
         for (int j = 0; j < mapWidth; j++) {
-            if (i == ::player[0].position.second && j == ::player[0].position.first) {
-                setColor(cout, ::player[0].color);
-                cout << ::player[0].symbol << termcolor::reset;
+            if (i == players[0].position.second && j == players[0].position.first) {
+                setColor(cout, players[0].color);
+                cout << players[0].symbol << termcolor::reset;
 
-            } else if (i == ::player[1].position.second && j == ::player[1].position.first) {
-                setColor(cout, ::player[1].color);
-                cout << ::player[1].symbol << termcolor::reset;
-                
+            } else if (i == players[1].position.second && j == players[1].position.first) {
+                setColor(cout, players[1].color);
+                cout << players[1].symbol << termcolor::reset;
+
             } else if (map[i][j].isAccessible) {
                 if (map[i][j].color == "white") {
                     cout << map[i][j].symbol << " ";
@@ -107,11 +108,27 @@ void GameMap::displayMap(const GameCharacter& player) {
             } else {
                 cout << "  "; // 빈 공간
             }
+
+            //원본 맵 옆에 전투력 UI 추가
+            if(j == mapWidth-1) {
+                for(size_t p = 0; p < mapWidth; p++) {
+                    spacing += 2; // 타일 하나가 공간 2칸 차지
+                    if(map[i][p].isAccessible){
+                        if(firstAccess){
+                            string gap(spacing, ' ');
+                            cout << gap;
+                            firstAccess = false;
+                        }
+                        cout << map[i][p].power << " ";
+                    }
+                }
+            }
         }
+    
         cout << endl;
     }
-    
-    cout << "==============================================" << endl;
+
+    cout << '\n' << "==============================================" << endl;
 }
 
 void GameMap::movePlayer(GameCharacter& player, char direction) {
@@ -200,7 +217,6 @@ void GameMap::movePlayer(GameCharacter& player, int direction) {
     
     if (isValidMove(newX, newY)) {
         setTileColor(playerX, playerY, "red"); // 이전 위치를 빨간색으로 변경
-        displayMap(player);
         
         playerX = newX;
         playerY = newY;
@@ -243,7 +259,6 @@ MapTile* GameMap::getCurrentTile() {
     return &map[playerY][playerX];
 }
 
-
 void GameMap::setTileColor(int x, int y, const string& color) {
      map[y][x].color = color;
 }
@@ -269,29 +284,28 @@ void GameMap::calculatePower(GameCharacter& player, int stateIndex){
 }
 
 // 1번 플레이어 조작
-pair<int, int> GameMap::operation_map(GameCharacter& player) {
+pair<int, int> GameMap::operation_map(vector<GameCharacter>& players) {
 
     char input;
-    player.tileId = 1;
     while (true) {
-        player.opMap->setPlayerPosition(player.position.first, player.position.second);
-        player.opMap->displayMap(player);
+        players[0].opMap->setPlayerPosition(players[0].position.first, players[0].position.second);
+        players[0].opMap->displayMap(players);
         cout << "\n1번 플레이어 조작: W(x위쪽), S(/아랫쪽), A(-왼쪽), D(+오른쪽), Q(나가기)" << endl;
         cout << "\n명령을 입력하세요: ";
         cin >> input;
         
         if (input == 'q' || input == 'Q') {
             cout << "탐색을 종료합니다." << endl;
-            return {player.opMap->getPlayerX(), player.opMap->getPlayerY()};
+            return {players[0].opMap->getPlayerX(), players[0].opMap->getPlayerY()};
         }
 
-        player.opMap->movePlayer(player, input);
-        player.position = {player.opMap->getPlayerX(), player.opMap->getPlayerY()};
-        player.opMap->displayMap(player);
+        players[0].opMap->movePlayer(players[0], input);
+        players[0].position = {players[0].opMap->getPlayerX(), players[0].opMap->getPlayerY()};
+        players[0].opMap->displayMap(players);
         
         //끝나면 바로 다음 플레이어 operation_map 호출
-        ::player[1].tileId = 2;
-        player.opMap->operation_map(::player[1], ::player[1].tileId);
+        players[1].tileId = 2;
+        players[1].opMap->operation_map(players, players[1].tileId);
         cout << "\nPress Enter to continue...";
         cin.ignore();
         cin.get();
@@ -299,10 +313,10 @@ pair<int, int> GameMap::operation_map(GameCharacter& player) {
 }
 
 
-void GameMap::operation_map(GameCharacter& player, int id) {
+void GameMap::operation_map(vector<GameCharacter>& players, int id) {
     int input;
-    player.opMap->setPlayerPosition(player.position.first, player.position.second);
-    player.opMap->displayMap(player);
+    players[1].opMap->setPlayerPosition(players[1].position.first, players[1].position.second);
+    players[1].opMap->displayMap(players);
     // 조작 설명을 여기로 옮기는게 나을 것 같기도 하고
     cout << "\n2번 플레이어 조작: ↑(x위쪽), ↓(/아랫쪽), ←(-왼쪽), →(+오른쪽)" << endl;
     while(true){
@@ -311,10 +325,10 @@ void GameMap::operation_map(GameCharacter& player, int id) {
         if(input == 224) { // 특수 키(화살4표 키 등)의 경우
             input = _getch(); // 실제 키 코드 읽기
         }
-        player.opMap->movePlayer(player, input);
+        players[1].opMap->movePlayer(players[1], input);
         if(input == 72 || input == 80 || input == 75 || input == 77) break;
     }
 
-    player.position = {player.opMap->getPlayerX(), player.opMap->getPlayerY()};
-    player.opMap->displayMap(player);
+    players[1].position = {players[1].opMap->getPlayerX(), players[1].opMap->getPlayerY()};
+    players[1].opMap->displayMap(players);
 }

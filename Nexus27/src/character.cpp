@@ -32,7 +32,7 @@ void customize_character(vector<GameCharacter>& characters, bool& created) {
         cout << "+(오른쪽): " << characters[i].stats[3] << endl;
 
         cout << "\n랜덤으로 스탯을 조정 가능합니다." << endl;
-        vector<float> random_stats;
+        vector<int> random_stats;
 
         while(true) {
             cout << "스탯을 랜덤으로 조정하시겠습니까? (y/n): ";
@@ -71,20 +71,19 @@ void customize_character(vector<GameCharacter>& characters, bool& created) {
 
 
 
-vector<float> random_generate(int parts) {
-    vector<float> result;
+vector<int> random_generate(int parts) {
+    vector<int> result;
     random_device rd;
     mt19937 gen(rd());
-    uniform_real_distribution<> dis(-10.0, 10.0);
+    uniform_real_distribution<> dis(-10, 10);
 
-    float sum = 0.0;
+    int sum = 0;
     for (int i = 0; i < parts - 1; ++i) {
-        float val = dis(gen);
-        if(val == -0.0)
-            val = 0.0;
-        float rounded = std::round(val * 10) / 10.0f;
-        result.push_back(rounded);
-        sum += rounded;
+        int val = dis(gen);
+        if(val == -0)
+            val = 0;
+        result.push_back(val);
+        sum += val;
     }
     result.push_back(-sum); // 마지막 원소를 총합이 0이 되도록 맞춤
     return result;

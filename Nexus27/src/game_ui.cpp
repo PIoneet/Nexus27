@@ -84,7 +84,7 @@ void game_play(vector<GameCharacter>& players) {
     system("cls");
     switch(choice) {
         case 1:
-            players[0].position = players[0].opMap->operation_map(players[0]);
+            players[0].position = players[0].opMap->operation_map(players);
             break;
         case 2:
             cout << "캐릭터 변경하기." << endl;
