@@ -71,10 +71,9 @@ public:
     float currentPower; //현재 방향 스탯
     float totalPower; //스탯 총합 
     GameMap* opMap; //2명의 플레이어가 참조할 하나의 opMap
-    vector<int> stats; //+(오른쪽) , -(왼쪽), x(윗쪽), /(아랫쪽)
 
     GameCharacter (GameMap* opMap)
-        : MapTile(), name(""), currentPower(0), totalPower(0), opMap(opMap), stats({1, -1, 1, -1}) {}
+        : MapTile(), name(""), currentPower(0), totalPower(0), opMap(opMap) {}
 
 };
 

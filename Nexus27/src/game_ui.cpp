@@ -36,10 +36,7 @@ void new_game(vector<GameCharacter>& players) {
                     cout << endl;
                     cout << i+1 << ". 이름: " << players[i].name << "\n" << endl;
                     cout << "현재 스탯:" << endl;
-                    cout << "x(윗쪽): " << players[i].stats[0] << endl;
-                    cout << "/(아랫쪽): " << players[i].stats[1] << endl;
-                    cout << "-(왼쪽): "<< players[i].stats[2] << endl;
-                    cout << "+(오른쪽): " << players[i].stats[3] << endl;
+                    cout << "초기 전투력: " << players[i].totalPower << endl;
                     cout << "-------------------" << endl;                    
                 }
                 gameState = INTRO;

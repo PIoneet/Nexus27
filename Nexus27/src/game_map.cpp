@@ -23,10 +23,8 @@ void GameMap::initializeMap() {
     map.resize(mapHeight, vector<MapTile>(mapWidth));
     // 모든 타일을 기본적으로 접근 불가능하게 설정
     for (int i = 0; i < mapHeight; i++) {
-        vector<int> random_stats = random_generate(mapWidth);
         for (int j = 0; j < mapWidth; j++) {
-            map[i][j] = MapTile("■", "white", 0, false, {i, j}, 0);
-        
+            map[i][j] = MapTile("■", "white", random_generate(), false, {i, j}, 0);
         }
     }
     
@@ -81,12 +79,14 @@ void GameMap::initializeMap() {
 
 void GameMap::displayMap(const vector<GameCharacter>& players) {
     system("cls"); // 화면 지우기
-    cout << "================ Operation Map ================" << endl;
+    cout << "=============================== Game Map ===============================" << endl;
     cout << "현재 위치: (" << playerX << ", " << playerY << ")" << endl;
     cout << "\n";
     for (int i = 0; i < mapHeight; i++) {
-        int spacing = 6;
-        bool firstAccess = true;
+        int spacing = 5;
+        bool secondMapAccess = true;
+        bool thirdMapAccess = true;
+
         cout << "  "; // 들여쓰기
         for (int j = 0; j < mapWidth; j++) {
             if (i == players[0].position.second && j == players[0].position.first) {
@@ -114,21 +114,35 @@ void GameMap::displayMap(const vector<GameCharacter>& players) {
                 for(size_t p = 0; p < mapWidth; p++) {
                     spacing += 2; // 타일 하나가 공간 2칸 차지
                     if(map[i][p].isAccessible){
-                        if(firstAccess){
+                        if(secondMapAccess){
                             string gap(spacing, ' ');
                             cout << gap;
-                            firstAccess = false;
+                            secondMapAccess = false;
                         }
-                        cout << map[i][p].power << " ";
+                        cout << '?' << " ";
                     }
                 }
             }
+            spacing = 5;
+            if(j == mapWidth-1) {
+                for(size_t k = 0; k < mapWidth; k++) {
+                    spacing += 2; // 타일 하나가 공간 2칸 차지
+                    if(map[i][k].isAccessible){
+                        if(thirdMapAccess){
+                            string gap(spacing, ' ');
+                            cout << gap;
+                            thirdMapAccess = false;
+                        }
+                        cout << '0' << " ";
+                    }
+                }
+            }
+        
         }
-    
         cout << endl;
     }
 
-    cout << '\n' << "==============================================" << endl;
+    cout << '\n' << "========================================================================" << endl;
 }
 
 void GameMap::movePlayer(GameCharacter& player, char direction) {
@@ -141,28 +155,28 @@ void GameMap::movePlayer(GameCharacter& player, char direction) {
         case 'w':
         case 'W':
             stateIndex = 0;
-            calculatePower(player, stateIndex);
+            //calculatePower(player, stateIndex);
             newY--;
             break;
         // /방향
         case 's':
         case 'S':
             stateIndex = 1;
-            calculatePower(player, stateIndex);
+            //calculatePower(player, stateIndex);
             newY++;
             break;
         // -방향
         case 'a':
         case 'A':
             stateIndex = 2;
-            calculatePower(player, stateIndex);
+            //calculatePower(player, stateIndex);
             newX--;
             break;
         // +방향
         case 'd':
         case 'D':
             stateIndex = 3;
-            calculatePower(player, stateIndex);
+            //calculatePower(player, stateIndex);
             newX++;
             break;
         default:
@@ -188,25 +202,25 @@ void GameMap::movePlayer(GameCharacter& player, int direction) {
         //x방향
         case 72:// 위쪽 화살표
             stateIndex = 0;
-            calculatePower(player, stateIndex);
+            //calculatePower(player, stateIndex);
                 newY--;
                 break;
         // /방향
         case 80:// 아래쪽 화살표
             stateIndex = 1;
-            calculatePower(player, stateIndex);
+            //calculatePower(player, stateIndex);
             newY++;
             break;
         // -방향
         case 75:// 왼쪽 화살표
             stateIndex = 2;
-            calculatePower(player, stateIndex);
+            //calculatePower(player, stateIndex);
             newX--;
             break;
         // + 방향
         case 77:// 오른쪽 화살표
             stateIndex = 3;
-            calculatePower(player, stateIndex);
+            //calculatePower(player, stateIndex);
             newX++;
             break;
         default:
@@ -263,25 +277,7 @@ void GameMap::setTileColor(int x, int y, const string& color) {
      map[y][x].color = color;
 }
 
-void GameMap::calculatePower(GameCharacter& player, int stateIndex){
-    
-    if(stateIndex == 0){
-        player.currentPower = player.stats[stateIndex]; //x(윗쪽)
-        cout << "현재 x(곱하기) 전투력: " << player.currentPower << endl;
-    }
-    else if(stateIndex == 1){
-        player.currentPower = player.stats[stateIndex]; // /(아랫쪽)
-        cout << "현재 /(나누기) 전투력: " << player.currentPower << endl;
-    }
-    else if(stateIndex == 2){
-        player.currentPower = player.stats[stateIndex]; // -(왼쪽)
-        cout << "현재 -(마이너스) 전투력: " << player.currentPower << endl;
-    }
-    else if(stateIndex == 3){
-        player.currentPower = player.stats[stateIndex]; // +(오른쪽)
-        cout << "현재 +(플러스) 전투력: " << player.currentPower << endl;
-    }
-}
+//void GameMap::calculatePower(GameCharacter& player, int stateIndex){}
 
 // 1번 플레이어 조작
 pair<int, int> GameMap::operation_map(vector<GameCharacter>& players) {

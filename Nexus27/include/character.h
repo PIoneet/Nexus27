@@ -6,6 +6,6 @@
 #define COLOR_SIZE 2
 // 캐릭터 관련 함수들
 void customize_character(vector<GameCharacter>& characters, bool& created);
-vector<int> random_generate(int parts);
+int random_generate();
 
 #endif // CHARACTER_H
