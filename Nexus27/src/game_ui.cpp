@@ -49,6 +49,7 @@ void new_game(vector<GameCharacter>& players) {
             if(!created){
                 customize_character(players, created);
                 cout << "모든 캐릭터가 생성되었습니다!\n";
+                continue;
             } else {
                 cout << "모든 슬롯에 캐릭터가 이미 생성되어 있습니다.\n";
                 gameState = READY;

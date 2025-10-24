@@ -83,9 +83,7 @@ void GameMap::displayMap(const vector<GameCharacter>& players) {
     cout << "현재 위치: (" << playerX << ", " << playerY << ")" << endl;
     cout << "\n";
     for (int i = 0; i < mapHeight; i++) {
-        int spacing = 5;
-        bool secondMapAccess = true;
-        bool thirdMapAccess = true;
+        bool mapAccess = true;
 
         cout << "  "; // 들여쓰기
         for (int j = 0; j < mapWidth; j++) {
@@ -109,31 +107,37 @@ void GameMap::displayMap(const vector<GameCharacter>& players) {
                 cout << "  "; // 빈 공간
             }
 
-            //원본 맵 옆에 전투력 UI 추가
+            
+
             if(j == mapWidth-1) {
+                cout << "      ";
                 for(size_t p = 0; p < mapWidth; p++) {
-                    spacing += 2; // 타일 하나가 공간 2칸 차지
                     if(map[i][p].isAccessible){
-                        if(secondMapAccess){
-                            string gap(spacing, ' ');
-                            cout << gap;
-                            secondMapAccess = false;
+                        if(mapAccess){
+                            cout << "  ";
+                            mapAccess = false;
                         }
                         cout << '?' << " ";
                     }
+                    else{
+                        cout << "  ";
+                    }
                 }
             }
-            spacing = 5;
+
+            mapAccess = true;
             if(j == mapWidth-1) {
+                cout << "      ";
                 for(size_t k = 0; k < mapWidth; k++) {
-                    spacing += 2; // 타일 하나가 공간 2칸 차지
                     if(map[i][k].isAccessible){
-                        if(thirdMapAccess){
-                            string gap(spacing, ' ');
-                            cout << gap;
-                            thirdMapAccess = false;
+                        if(mapAccess){
+                            cout << "  ";
+                            mapAccess = false;
                         }
                         cout << '0' << " ";
+                    }
+                    else{
+                        cout << "  ";
                     }
                 }
             }
