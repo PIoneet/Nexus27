@@ -51,14 +51,15 @@ public:
     
     void initializeMap();
     void displayMap(const vector<GameCharacter>& players);
-    void movePlayer(GameCharacter& player, char direction);
+    void movePlayer(GameCharacter& player, char& direction);
     void movePlayer(GameCharacter& player, int direction);
     bool isValidMove(int x, int y);
+    void consecutiveMove(int& newX, int& newY);
     void setPlayerPosition(int x, int y);
     int getPlayerX();
     int getPlayerY();
     MapTile* getCurrentTile();
-    void calculatePower(GameCharacter& player, int stateIndex);
+    //void calculatePower(GameCharacter& player, int stateIndex);
     void setTileColor(int x, int y, const std::string& color);
     pair<int, int> operation_map(vector<GameCharacter>& players);
     void operation_map(vector<GameCharacter>& players, int id);
@@ -68,8 +69,8 @@ public:
 class GameCharacter : public MapTile {
 public:
     string name;
-    float currentPower; //현재 방향 스탯
-    float totalPower; //스탯 총합 
+    int currentPower; //현재 방향 스탯
+    int totalPower; //스탯 총합
     GameMap* opMap; //2명의 플레이어가 참조할 하나의 opMap
 
     GameCharacter (GameMap* opMap)
