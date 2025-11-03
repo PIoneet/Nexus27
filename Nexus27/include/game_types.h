@@ -24,13 +24,12 @@ public:
     int power;
     bool isAccessible;
     pair<int, int> position; //게임 캐릭터의 현재 위치
-    int tileId;
     //주인공 객체 생성자
     MapTile() 
-        : symbol("◆ "), color("red"), power(0), isAccessible(true), position({4, 4}), tileId(0) {}
+        : symbol("◆ "), color("red"), power(0), isAccessible(true), position({4, 4}) {}
     //모든 타일 객체 생성자
-    MapTile(string symbol, string color, int power, bool isAccessible, pair<int, int> position, int tileId) 
-        : symbol(symbol), color(color), power(power), isAccessible(isAccessible), position(position), tileId(tileId) {}
+    MapTile(string symbol, string color, int power, bool isAccessible, pair<int, int> position) 
+        : symbol(symbol), color(color), power(power), isAccessible(isAccessible), position(position) {}
 };
 
 class GameCharacter; // 전방 선언
@@ -50,31 +49,34 @@ public:
         }
     
     void initializeMap();
-    void displayMap(const vector<GameCharacter>& players);
+    void displayMap(vector<GameCharacter>& players, string color);
     void movePlayer(GameCharacter& player, char& direction);
     void movePlayer(GameCharacter& player, int direction);
     bool isValidMove(int x, int y);
-    void consecutiveMove(int& newX, int& newY);
     void setPlayerPosition(int x, int y);
+    void initializeOccupiedTiles(vector<GameCharacter>& players);
     int getPlayerX();
     int getPlayerY();
     MapTile* getCurrentTile();
     //void calculatePower(GameCharacter& player, int stateIndex);
     void setTileColor(int x, int y, const std::string& color);
-    pair<int, int> operation_map(vector<GameCharacter>& players);
-    void operation_map(vector<GameCharacter>& players, int id);
+    void mapOrder(vector<GameCharacter>& players);
+    void first_map(vector<GameCharacter>& players);
+    void second_map(vector<GameCharacter>& players);
 };
 
 
 class GameCharacter : public MapTile {
 public:
     string name;
-    int currentPower; //현재 방향 스탯
-    int totalPower; //스탯 총합
+    int currentPower; //현재 타일의 전투력
+    int totalPower; //전투력 총합
+    int occupiedTiles; //점령한 타일 수
+    bool turn; // 현재 턴 여부
     GameMap* opMap; //2명의 플레이어가 참조할 하나의 opMap
 
     GameCharacter (GameMap* opMap)
-        : MapTile(), name(""), currentPower(0), totalPower(0), opMap(opMap) {}
+        : MapTile(), name(""), currentPower(0), totalPower(0), occupiedTiles(0), turn(false), opMap(opMap) {}
 
 };
 

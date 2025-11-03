@@ -27,3 +27,15 @@ int get_valid_input(int min, int max, const string& prompt) {
         return input; // 유효한 입력이면 반환
     }
 }
+
+template<typename A, typename B>
+int make_pair_custom(A a, B b) {
+    return pair<A, B>(a, b);
+}
+
+void swap_int(int& a, int& b) {
+   a = a^b;
+   b = a^b;
+   a = a^b;
+    return;
+}

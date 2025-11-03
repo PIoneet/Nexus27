@@ -70,11 +70,12 @@ void new_game(vector<GameCharacter>& players) {
 
 
 void game_play(vector<GameCharacter>& players) {
+    int select = 1;
     system("cls");
     cout << "=== 게임 플레이 ===" << endl;
     cout << "\n"; 
-    cout << players[0].tileId << "번 플레이어: " << players[0].name << " vs ";
-    cout << players[1].tileId << "번 플레이어: " << players[1].name << "\n" << endl;
+    cout << 1 << "번 플레이어: " << players[0].name << " vs ";
+    cout << 2 << "번 플레이어: " << players[1].name << "\n" << endl;
     cout << "1. 탐색 진행" << endl;
     cout << "2. 캐릭터 변경" << endl;
     cout << "3. 게임 종료\n" << endl;
@@ -82,7 +83,7 @@ void game_play(vector<GameCharacter>& players) {
     system("cls");
     switch(choice) {
         case 1:
-            players[0].position = players[0].opMap->operation_map(players);
+            players[0].opMap->mapOrder(players);
             break;
         case 2:
             cout << "캐릭터 변경하기." << endl;

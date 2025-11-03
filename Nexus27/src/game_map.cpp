@@ -4,6 +4,7 @@
 #include <conio.h>
 #include "termcolor.hpp"
 #include "character.h"
+#include "input_utils.h"
 
 using namespace std;
 
@@ -24,7 +25,7 @@ void GameMap::initializeMap() {
     // 모든 타일을 기본적으로 접근 불가능하게 설정
     for (int i = 0; i < mapHeight; i++) {
         for (int j = 0; j < mapWidth; j++) {
-            map[i][j] = MapTile("■", "white", random_generate(), false, {i, j}, 0);
+            map[i][j] = MapTile("■", "white", random_generate(), false, {i, j});
         }
     }
     
@@ -77,10 +78,14 @@ void GameMap::initializeMap() {
     }
 }
 
-void GameMap::displayMap(const vector<GameCharacter>& players) {
+void GameMap::displayMap(vector<GameCharacter>& players, string color) {
     system("cls"); // 화면 지우기
+
+    initializeOccupiedTiles(players);
     cout << "=============================== Game Map ===============================" << endl;
-    cout << "현재 위치: (" << playerX << ", " << playerY << ")" << endl;
+    cout << "플레이어 현재 전력: "; 
+    setColor(cout, color);
+    cout << map[playerY][playerX].power << "명" << termcolor::reset << endl;
     cout << "\n";
     for (int i = 0; i < mapHeight; i++) {
         bool mapAccess = true;
@@ -140,26 +145,47 @@ void GameMap::displayMap(const vector<GameCharacter>& players) {
                             cout << "  ";
                             mapAccess = false;
                         }
-                        cout << '0' << " ";
+                        cout << '+' << " ";
                     }
                     else{
                         cout << "  ";
                     }
                 }
             }
-        
+            // 점령 지역 계산
+            if(map[i][j].color == players[0].color)
+                players[0].occupiedTiles += 1;
+            else if(map[i][j].color == players[1].color)
+                players[1].occupiedTiles += 1;
+            
+            
+            
         }
         cout << endl;
         // 이 함수에서 따로 전투력 계산해주는 ui 출력해도 좋을듯. 함수 호출을 여기서 하는거지
     }
 
-    cout << '\n' << "========================================================================" << endl;
+    string space = "       ";
+    cout << "\n                            "; 
+    setColor(cout, players[0].color); 
+    cout<< players[0].occupiedTiles << termcolor::reset;
+    cout << space << "vs" << space;
+    setColor(cout, players[1].color);
+    cout<< players[1].occupiedTiles  << termcolor::reset;
+
+    if(players[0].occupiedTiles > players[1].occupiedTiles)
+        players[0].turn = true;
+    else if(players[0].occupiedTiles < players[1].occupiedTiles)
+        players[0].turn = false;
+
+    cout << '\n' << '\n' << "========================================================================" << endl;
 }
 
 void GameMap::movePlayer(GameCharacter& player, char& direction) {
     int stateIndex;
 
     cout << "\n1번 플레이어 조작: W(x위쪽), S(/아랫쪽), A(-왼쪽), D(+오른쪽), Q(나가기)" << endl;
+    
     while(true){
         int newX = playerX;
         int newY = playerY;
@@ -206,9 +232,15 @@ void GameMap::movePlayer(GameCharacter& player, char& direction) {
 
         if (isValidMove(newX, newY)) {
             setTileColor(playerX, playerY, player.color);
+
+            if(map[newY][newX].color == player.color){
+                swap_int(getCurrentTile()->power, map[newY][newX].power);    
+            }
+            
             playerX = newX;
             playerY = newY;
-       
+            
+
             cout << "이동했습니다!" << endl;
             break;
         } else {
@@ -223,6 +255,7 @@ void GameMap::movePlayer(GameCharacter& player, char& direction) {
 void GameMap::movePlayer(GameCharacter& player, int direction) {
     int stateIndex;
     cout << "\n2번 플레이어 조작: ↑(x위쪽), ↓(/아랫쪽), ←(-왼쪽), →(+오른쪽)" << endl;
+    
     while(true){
         int newX = playerX;
         int newY = playerY;
@@ -298,6 +331,12 @@ void GameMap::setPlayerPosition(int x, int y) {
     }
 }
 
+void GameMap::initializeOccupiedTiles(vector<GameCharacter>& players){
+    for(auto& player : players){
+        player.occupiedTiles = 0;
+    }
+}
+
 int GameMap::getPlayerX(){
     return playerX;
 }
@@ -316,41 +355,73 @@ void GameMap::setTileColor(int x, int y, const string& color) {
 
 //void GameMap::calculatePower(GameCharacter& player, int stateIndex){}
 
+
+void GameMap::mapOrder(vector<GameCharacter>& players){
+    //1 -> 2
+    while(true){
+       if(players[0].occupiedTiles > players[1].occupiedTiles || players[0].turn){
+            first_map(players);
+            second_map(players);
+            return;
+       } 
+       else{
+            second_map(players);
+            first_map(players);
+            return;
+       }
+    }
+
+}
+
 // 1번 플레이어 조작
-pair<int, int> GameMap::operation_map(vector<GameCharacter>& players) {
+void GameMap::first_map(vector<GameCharacter>& players) {
 
     char direction;
     while (true) {
         players[0].opMap->setPlayerPosition(players[0].position.first, players[0].position.second);
-        players[0].opMap->displayMap(players);
+        players[0].opMap->displayMap(players, players[0].color);
 
         players[0].opMap->movePlayer(players[0], direction);
-        if (direction == 'q' || direction == 'Q') 
-            return {players[0].opMap->getPlayerX(), players[0].opMap->getPlayerY()};
-        
+        /*if (direction == 'q' || direction == 'Q'){
+            players[0].position = {players[0].opMap->getPlayerX(), players[0].opMap->getPlayerY()};
+            gameState = INTRO;
+            return;
+        }*/
         players[0].position = {players[0].opMap->getPlayerX(), players[0].opMap->getPlayerY()};
-            if(getCurrentTile()->color == players[0].color){
-            continue;
-        }
-        
-        players[0].opMap->displayMap(players);
-        
+            if(getCurrentTile()->color == players[0].color)
+                continue;
+        players[0].opMap->displayMap(players, players[0].color);
         //끝나면 바로 다음 플레이어 operation_map 호출
-        players[1].tileId = 2;
-        players[1].opMap->operation_map(players, players[1].tileId);
+
         cout << "\nPress Enter to continue...";
         cin.ignore();
         cin.get();
+
+        break;
     }
 }
 
 
-void GameMap::operation_map(vector<GameCharacter>& players, int id) {
+void GameMap::second_map(vector<GameCharacter>& players) {
     int input;
-    players[1].opMap->setPlayerPosition(players[1].position.first, players[1].position.second);
-    players[1].opMap->displayMap(players);
-    players[1].opMap->movePlayer(players[1], input);
+    
+    while(true){
 
-    players[1].position = {players[1].opMap->getPlayerX(), players[1].opMap->getPlayerY()};
-    players[1].opMap->displayMap(players);
+        players[1].opMap->setPlayerPosition(players[1].position.first, players[1].position.second);
+        players[1].opMap->displayMap(players, players[1].color);
+        players[1].opMap->movePlayer(players[1], input);
+        players[1].position = {players[1].opMap->getPlayerX(), players[1].opMap->getPlayerY()};
+        
+        if(getCurrentTile()->color == players[1].color){
+            continue;
+        }
+        players[1].opMap->displayMap(players, players[1].color);
+        
+        cout << "\nPress Enter to continue...";
+        cin.ignore();
+        cin.get();
+
+        break;
+    }
+
 }
