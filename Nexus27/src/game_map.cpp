@@ -200,29 +200,21 @@ void GameMap::movePlayer(GameCharacter& player, char& direction) {
             // x방향
             case 'w':
             case 'W':
-                stateIndex = 0;
-                //calculatePower(player, stateIndex);
                 newY--;
                 break;
             // /방향
             case 's':
             case 'S':
-                stateIndex = 1;
-                //calculatePower(player, stateIndex);
                 newY++;
                 break;
             // -방향
             case 'a':
             case 'A':
-                stateIndex = 2;
-                //calculatePower(player, stateIndex);
                 newX--;
                 break;
             // +방향
             case 'd':
             case 'D':
-                stateIndex = 3;
-                //calculatePower(player, stateIndex);
                 newX++;
                 break;
             default:
@@ -231,11 +223,28 @@ void GameMap::movePlayer(GameCharacter& player, char& direction) {
         }
 
         if (isValidMove(newX, newY)) {
-            setTileColor(playerX, playerY, player.color);
-
-            if(map[newY][newX].color == player.color){
+            //기병, 창병, 보병에 따라 다른 결과
+            if(map[newY][newX].color == player.color) {
                 swap_int(getCurrentTile()->power, map[newY][newX].power);    
             }
+            else if(map[newY][newX].color == "red"){
+                if(getCurrentTile()->power >= map[newY][newX].power){
+                    setTileColor(playerX, playerY, player.color);
+                    map[newY][newX].power = getCurrentTile()->power - map[newY][newX].power;
+                    getCurrentTile()->power = 0;
+                    map[newY][newX].color = player.color;
+                    playerX = newX;
+                    playerY = newY;
+                    cout << "\n적의 타일을 점령했습니다!" << endl;
+                    continue;
+                }
+                else{
+                    cout << "\n적의 타일을 점령하지 못했습니다!" << endl;
+                    continue;
+                }
+            }
+            else
+                setTileColor(playerX, playerY, player.color);
             
             playerX = newX;
             playerY = newY;
@@ -270,26 +279,18 @@ void GameMap::movePlayer(GameCharacter& player, int direction) {
         switch (direction) {
             //x방향
             case 72:// 위쪽 화살표
-                stateIndex = 0;
-                //calculatePower(player, stateIndex);
                 newY--;
                 break;
             // /방향
             case 80:// 아래쪽 화살표
-                stateIndex = 1;
-                //calculatePower(player, stateIndex);
                 newY++;
                 break;
             // -방향
-            case 75:// 왼쪽 화살표
-                stateIndex = 2;
-                //calculatePower(player, stateIndex);
+            case 75:// 왼쪽 화살
                 newX--;
                 break;
             // + 방향
             case 77:// 오른쪽 화살표
-                stateIndex = 3;
-                //calculatePower(player, stateIndex);
                 newX++;
                 break;
             default:
@@ -297,9 +298,32 @@ void GameMap::movePlayer(GameCharacter& player, int direction) {
                 continue;
         }
     
+        cout<<'\n';
     
         if (isValidMove(newX, newY)) {
-            setTileColor(playerX, playerY, player.color);
+            //기병, 창병, 보병에 따라 다른 결과
+            if(map[newY][newX].color == player.color) {
+                swap_int(getCurrentTile()->power, map[newY][newX].power);    
+            }
+            else if(map[newY][newX].color == "green"){
+                if(getCurrentTile()->power >= map[newY][newX].power){
+                    setTileColor(playerX, playerY, player.color);
+                    map[newY][newX].power = getCurrentTile()->power - map[newY][newX].power;
+                    getCurrentTile()->power = 0;
+                    map[newY][newX].color = player.color;
+                    playerX = newX;
+                    playerY = newY;
+                    cout << "\n적의 타일을 점령했습니다!" << endl;
+                    continue;
+                }
+                else{
+                    cout << "\n적의 타일을 점령하지 못했습니다!" << endl;
+                    continue;
+                }
+            }
+            else
+                setTileColor(playerX, playerY, player.color);
+
             playerX = newX;
             playerY = newY;
 
@@ -353,8 +377,6 @@ MapTile* GameMap::getCurrentTile() {
 void GameMap::setTileColor(int x, int y, const string& color) {
      map[y][x].color = color;
 }
-
-//void GameMap::calculatePower(GameCharacter& player, int stateIndex){}
 
 
 void GameMap::mapTurn(vector<GameCharacter>& players){
