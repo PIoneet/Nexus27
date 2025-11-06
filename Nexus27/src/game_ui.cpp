@@ -83,7 +83,7 @@ void game_play(vector<GameCharacter>& players) {
     system("cls");
     switch(choice) {
         case 1:
-            players[0].opMap->mapOrder(players);
+            players[0].opMap->mapTurn(players);
             break;
         case 2:
             cout << "캐릭터 변경하기." << endl;

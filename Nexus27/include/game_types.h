@@ -60,7 +60,7 @@ public:
     MapTile* getCurrentTile();
     //void calculatePower(GameCharacter& player, int stateIndex);
     void setTileColor(int x, int y, const std::string& color);
-    void mapOrder(vector<GameCharacter>& players);
+    void mapTurn(vector<GameCharacter>& players);
     void first_map(vector<GameCharacter>& players);
     void second_map(vector<GameCharacter>& players);
 };
@@ -76,7 +76,7 @@ public:
     GameMap* opMap; //2명의 플레이어가 참조할 하나의 opMap
 
     GameCharacter (GameMap* opMap)
-        : MapTile(), name(""), currentPower(0), totalPower(0), occupiedTiles(0), turn(false), opMap(opMap) {}
+        : MapTile(), name(""), currentPower(0), totalPower(0), occupiedTiles(0), turn(true), opMap(opMap) {}
 
 };
 

@@ -145,7 +145,7 @@ void GameMap::displayMap(vector<GameCharacter>& players, string color) {
                             cout << "  ";
                             mapAccess = false;
                         }
-                        cout << '+' << " ";
+                        cout << 'x' << " ";
                     }
                     else{
                         cout << "  ";
@@ -166,12 +166,12 @@ void GameMap::displayMap(vector<GameCharacter>& players, string color) {
     }
 
     string space = "       ";
-    cout << "\n                            "; 
+    cout << "\n                       "; 
     setColor(cout, players[0].color); 
-    cout<< players[0].occupiedTiles << termcolor::reset;
+    cout<< players[0].occupiedTiles << "타일" << termcolor::reset;
     cout << space << "vs" << space;
     setColor(cout, players[1].color);
-    cout<< players[1].occupiedTiles  << termcolor::reset;
+    cout<< players[1].occupiedTiles << "타일" << termcolor::reset;
 
     if(players[0].occupiedTiles > players[1].occupiedTiles)
         players[0].turn = true;
@@ -246,9 +246,10 @@ void GameMap::movePlayer(GameCharacter& player, char& direction) {
         } else {
             cout << "그 방향으로는 갈 수 없습니다!" << endl;
         }
-        cout << "\nPress Enter to continue...";
+
+        cout << "\nPress Enter to continue..."; 
         cin.ignore();
-        cin.get();   
+        cin.get();
     }
 }
 
@@ -308,9 +309,9 @@ void GameMap::movePlayer(GameCharacter& player, int direction) {
             cout << "그 방향으로는 갈 수 없습니다!" << endl;
         }
         
-        cout << "\nPress Enter to continue...";
+        cout << "\nPress Enter to continue..."; 
         cin.ignore();
-        cin.get();  
+        cin.get();
     }
 }
 
@@ -356,7 +357,7 @@ void GameMap::setTileColor(int x, int y, const string& color) {
 //void GameMap::calculatePower(GameCharacter& player, int stateIndex){}
 
 
-void GameMap::mapOrder(vector<GameCharacter>& players){
+void GameMap::mapTurn(vector<GameCharacter>& players){
     //1 -> 2
     while(true){
        if(players[0].occupiedTiles > players[1].occupiedTiles || players[0].turn){
@@ -391,9 +392,8 @@ void GameMap::first_map(vector<GameCharacter>& players) {
             if(getCurrentTile()->color == players[0].color)
                 continue;
         players[0].opMap->displayMap(players, players[0].color);
-        //끝나면 바로 다음 플레이어 operation_map 호출
 
-        cout << "\nPress Enter to continue...";
+        cout << "\nPress Enter to continue..."; 
         cin.ignore();
         cin.get();
 
@@ -418,8 +418,7 @@ void GameMap::second_map(vector<GameCharacter>& players) {
         players[1].opMap->displayMap(players, players[1].color);
         
         cout << "\nPress Enter to continue...";
-        cin.ignore();
-        cin.get();
+        _getch(); //어쩌피 버퍼에 남아있는거 없으니까 한번만 입력받고 종료
 
         break;
     }
