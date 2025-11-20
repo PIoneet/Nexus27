@@ -32,11 +32,7 @@ void customize_character(vector<GameCharacter>& characters, bool& created) {
 
         cout << "\n" << order << "번 캐릭터 커스터마이즈가 완료되었습니다!" << endl;
 
-        order++;
-        /*cout << "Press Enter to continue...";
-        cin.ignore();
-        cin.get();*/
-    
+        order++;    
     }
     created = true;
 

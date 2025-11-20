@@ -1,4 +1,5 @@
 #include "input_utils.h"
+#include "game_types.h"
 #include <iostream>
 
 using namespace std;
@@ -28,14 +29,12 @@ int get_valid_input(int min, int max, const string& prompt) {
     }
 }
 
-template<typename A, typename B>
-int make_pair_custom(A a, B b) {
-    return pair<A, B>(a, b);
+void swap_int(int& a, int& b) {
+    swap(a, b);
+    return;
 }
 
-void swap_int(int& a, int& b) {
-   a = a^b;
-   b = a^b;
-   a = a^b;
+void swap_terrain_symbol(string& a, string& b) {
+    swap(a, b);
     return;
 }

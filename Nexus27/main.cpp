@@ -110,6 +110,11 @@ int main() {
 
         }
     }
+    cout << "게임을 종료합니다. 감사합니다!" << endl;
+    cout << "Press Enter to continue...";
+    cin.ignore();
+    cin.get();
+    
     
 
     

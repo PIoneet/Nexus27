@@ -70,8 +70,9 @@ void new_game(vector<GameCharacter>& players) {
 
 
 void game_play(vector<GameCharacter>& players) {
-    int select = 1;
     system("cls");
+    if(gameState == EXIT)
+        return;
     cout << "=== 게임 플레이 ===" << endl;
     cout << "\n"; 
     cout << 1 << "번 플레이어: " << players[0].name << " vs ";

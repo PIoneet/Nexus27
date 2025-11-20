@@ -1,10 +1,13 @@
 #include "game_types.h"
+#include "game_ui.h"
 #include <iostream>
 #include <iomanip>
 #include <conio.h>
 #include "termcolor.hpp"
 #include "character.h"
 #include "input_utils.h"
+#include <random>    
+#include <algorithm>
 
 using namespace std;
 
@@ -23,9 +26,9 @@ void GameMap::initializeMap() {
     // 9x9 그리드 초기화 (빈 공간은 접근 불가능)
     map.resize(mapHeight, vector<MapTile>(mapWidth));
     // 모든 타일을 기본적으로 접근 불가능하게 설정
-    for (int i = 0; i < mapHeight; i++) {
-        for (int j = 0; j < mapWidth; j++) {
-            map[i][j] = MapTile("■", "white", random_generate(), false, {i, j});
+    for (int i = 0; i < mapHeight; i++) { //세로줄 
+        for (int j = 0; j < mapWidth; j++) { //가로줄
+            map[i][j] = MapTile("■", "white", random_generate(), false, {i, j}, Terrain::Close, ".");
         }
     }
     
@@ -76,16 +79,60 @@ void GameMap::initializeMap() {
     for (int j = 3; j <= 5; j++) {
         map[8][j].isAccessible = true;
     }
+    distributeTerrains(map);
+}
+
+//Terrain 효과 함수
+
+void GameMap::distributeTerrains(vector<vector<MapTile>>& map) {
+    vector<pair<int,int>> coords;
+    int h = (int)map.size(); // 행 반환(세로줄)
+    int w = (int)map[0].size(); //열 반환(가로줄)
+
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            if (map[y][x].isAccessible) coords.emplace_back(x, y);
+        }
+    }
+    int total = (int)coords.size(); // 57 출력
+
+    int base = total / 5; //값이 11
+
+    // terrains 벡터를 섞어서 어느 지형이 잉여를 가지는지 랜덤화
+    vector<Terrain> terrains = {Terrain::Close, Terrain::Open};
+    random_device rd;
+    mt19937 rng(rd());
+    vector<Terrain> terrainList;
+    terrainList.reserve(total);
+
+    for (int i = 0; i < 2; ++i) {
+        for (int k = 0; k < base; ++k) terrainList.push_back(terrains[i]);
+        base = total - base;
+    }
+    std::shuffle(terrainList.begin(), terrainList.end(), rng);
+
+    // 좌표 순서대로 terrainList를 할당
+    for (int i = 0; i < total; ++i) {
+        int x = coords[i].first;
+        int y = coords[i].second;
+        map[y][x].terrain = terrainList[i];
+        switch (map[y][x].terrain) {
+            case Terrain::Close:    map[y][x].terrainSymbol = "x"; break;
+            case Terrain::Open:    map[y][x].terrainSymbol = "o"; break;
+        }
+    }
 }
 
 void GameMap::displayMap(vector<GameCharacter>& players, string color) {
     system("cls"); // 화면 지우기
 
     initializeOccupiedTiles(players);
+    initializeTotalPower(players);
     cout << "=============================== Game Map ===============================" << endl;
     cout << "플레이어 현재 전력: "; 
     setColor(cout, color);
     cout << map[playerY][playerX].power << "명" << termcolor::reset << endl;
+
     cout << "\n";
     for (int i = 0; i < mapHeight; i++) {
         bool mapAccess = true;
@@ -145,7 +192,11 @@ void GameMap::displayMap(vector<GameCharacter>& players, string color) {
                             cout << "  ";
                             mapAccess = false;
                         }
-                        cout << 'x' << " ";
+                        if(map[i][k].color != "white" || i == players[0].position.second && k == players[0].position.first || i == players[1].position.second && k == players[1].position.first){
+                            setColor(cout, map[i][k].color);
+                            cout << map[i][k].terrainSymbol << " "<< termcolor::reset;
+                        }else
+                            cout << map[i][k].terrainSymbol << " ";
                     }
                     else{
                         cout << "  ";
@@ -153,10 +204,14 @@ void GameMap::displayMap(vector<GameCharacter>& players, string color) {
                 }
             }
             // 점령 지역 계산
-            if(map[i][j].color == players[0].color)
+            if(map[i][j].color == players[0].color){
+                players[0].totalPower += map[i][j].power; // 플레이어 1의 총 전력
                 players[0].occupiedTiles += 1;
-            else if(map[i][j].color == players[1].color)
+            }
+            else if(map[i][j].color == players[1].color){
+                players[1].totalPower += map[i][j].power; //플레이어 2의 총 전력
                 players[1].occupiedTiles += 1;
+            }
             
             
             
@@ -166,27 +221,37 @@ void GameMap::displayMap(vector<GameCharacter>& players, string color) {
     }
 
     string space = "       ";
-    cout << "\n                       "; 
+    cout << "\n                       ";
     setColor(cout, players[0].color); 
-    cout<< players[0].occupiedTiles << "타일" << termcolor::reset;
+    cout<< players[0].occupiedTiles << " 타일" << termcolor::reset;
     cout << space << "vs" << space;
     setColor(cout, players[1].color);
     cout<< players[1].occupiedTiles << "타일" << termcolor::reset;
+    cout << "\n                       ";
+
+    setColor(cout, players[0].color);
+    cout << players[0].totalPower << "명" << termcolor::reset;
+    cout << space << "vs" << space;
+    setColor(cout, players[1].color);
+    cout << players[1].totalPower << "명" << termcolor::reset;
 
     if(players[0].occupiedTiles > players[1].occupiedTiles)
         players[0].turn = true;
     else if(players[0].occupiedTiles < players[1].occupiedTiles)
         players[0].turn = false;
 
-    cout << '\n' << '\n' << "========================================================================" << endl;
+    cout << '\n' << "========================================================================" << endl;
 }
 
 void GameMap::movePlayer(GameCharacter& player, char& direction) {
-    int stateIndex;
-
     cout << "\n1번 플레이어 조작: W(x위쪽), S(/아랫쪽), A(-왼쪽), D(+오른쪽), Q(나가기)" << endl;
     
     while(true){
+        if(player.totalPower == player.occupiedTiles && player.totalPower != 0){
+            gameState = EXIT;
+            return;
+        }
+
         int newX = playerX;
         int newY = playerY;
         cout << "\n명령을 입력하세요: ";
@@ -197,22 +262,18 @@ void GameMap::movePlayer(GameCharacter& player, char& direction) {
             return;
         }
         switch (direction) {
-            // x방향
             case 'w':
             case 'W':
                 newY--;
                 break;
-            // /방향
             case 's':
             case 'S':
                 newY++;
                 break;
-            // -방향
             case 'a':
             case 'A':
                 newX--;
                 break;
-            // +방향
             case 'd':
             case 'D':
                 newX++;
@@ -222,13 +283,14 @@ void GameMap::movePlayer(GameCharacter& player, char& direction) {
                 continue;
         }
 
+        if(map[newY][newX].power == 0){
+            player.zero_power = true;
+        }
+        
         if (isValidMove(newX, newY)) {
-            //기병, 창병, 보병에 따라 다른 결과
-            if(map[newY][newX].color == player.color) {
-                swap_int(getCurrentTile()->power, map[newY][newX].power);    
-            }
-            else if(map[newY][newX].color == "red"){
-                if(getCurrentTile()->power >= map[newY][newX].power){
+
+            if (map[newY][newX].color == "red"){
+                if(getCurrentTile()->power >= map[newY][newX].power && getCurrentTile()->terrainSymbol == map[newY][newX].terrainSymbol){
                     setTileColor(playerX, playerY, player.color);
                     map[newY][newX].power = getCurrentTile()->power - map[newY][newX].power;
                     getCurrentTile()->power = 0;
@@ -243,12 +305,23 @@ void GameMap::movePlayer(GameCharacter& player, char& direction) {
                     continue;
                 }
             }
-            else
-                setTileColor(playerX, playerY, player.color);
-            
+            else {
+                if(map[newY][newX].color == player.color) {
+                    //0 타일을 밟은 적이 있거나 현 타일이 0이면 병력 교체
+                    if(!map[newY][newX].power || !player.zero_power) {
+                        swap_int(getCurrentTile()->power, map[newY][newX].power);
+                        swap_terrain_symbol(getCurrentTile()->terrainSymbol, map[newY][newX].terrainSymbol);
+                    }
+                    else
+                        {}
+                            
+                }else{
+                    player.zero_power = false;
+                    setTileColor(playerX, playerY, player.color);
+                }
+            }
             playerX = newX;
             playerY = newY;
-            
 
             cout << "이동했습니다!" << endl;
             break;
@@ -263,34 +336,34 @@ void GameMap::movePlayer(GameCharacter& player, char& direction) {
 }
 
 void GameMap::movePlayer(GameCharacter& player, int direction) {
-    int stateIndex;
     cout << "\n2번 플레이어 조작: ↑(x위쪽), ↓(/아랫쪽), ←(-왼쪽), →(+오른쪽)" << endl;
     
     while(true){
+
+        if(player.totalPower == player.occupiedTiles && player.totalPower != 0){
+            gameState = EXIT;
+            return;
+        }
         int newX = playerX;
         int newY = playerY;
 
         cout << "\n명령을 입력하세요: ";
         direction = _getch();
-        if(direction == 224) { // 특수 키(화살4표 키 등)의 경우
-            direction = _getch(); // 실제 키 코드 읽기
+        if(direction == 224) { 
+            direction = _getch(); 
         }    
 
         switch (direction) {
-            //x방향
-            case 72:// 위쪽 화살표
+            case 72:
                 newY--;
                 break;
-            // /방향
-            case 80:// 아래쪽 화살표
+            case 80:
                 newY++;
                 break;
-            // -방향
-            case 75:// 왼쪽 화살
+            case 75:
                 newX--;
                 break;
-            // + 방향
-            case 77:// 오른쪽 화살표
+            case 77:
                 newX++;
                 break;
             default:
@@ -299,14 +372,15 @@ void GameMap::movePlayer(GameCharacter& player, int direction) {
         }
     
         cout<<'\n';
+
+        if(map[newY][newX].power == 0){
+            player.zero_power = true;
+        }
     
         if (isValidMove(newX, newY)) {
-            //기병, 창병, 보병에 따라 다른 결과
-            if(map[newY][newX].color == player.color) {
-                swap_int(getCurrentTile()->power, map[newY][newX].power);    
-            }
-            else if(map[newY][newX].color == "green"){
-                if(getCurrentTile()->power >= map[newY][newX].power){
+            
+            if (map[newY][newX].color == "green"){
+                if(getCurrentTile()->power >= map[newY][newX].power && getCurrentTile()->terrainSymbol == map[newY][newX].terrainSymbol){
                     setTileColor(playerX, playerY, player.color);
                     map[newY][newX].power = getCurrentTile()->power - map[newY][newX].power;
                     getCurrentTile()->power = 0;
@@ -321,8 +395,21 @@ void GameMap::movePlayer(GameCharacter& player, int direction) {
                     continue;
                 }
             }
-            else
-                setTileColor(playerX, playerY, player.color);
+            else {
+                if(map[newY][newX].color == player.color) {
+                    //0 타일을 밟은 적이 있거나 현 타일이 0이면 병력 교체
+                    if(!map[newY][newX].power || !player.zero_power) {
+                        swap_int(getCurrentTile()->power, map[newY][newX].power);
+                        swap_terrain_symbol(getCurrentTile()->terrainSymbol, map[newY][newX].terrainSymbol);
+                    }
+                    else
+                        {}
+                            
+                }else{
+                    player.zero_power = false;
+                    setTileColor(playerX, playerY, player.color);
+                }
+            }
 
             playerX = newX;
             playerY = newY;
@@ -362,6 +449,12 @@ void GameMap::initializeOccupiedTiles(vector<GameCharacter>& players){
     }
 }
 
+void GameMap::initializeTotalPower(vector<GameCharacter>& players){
+    for(auto& player : players){
+        player.totalPower = 0;
+    }
+}
+
 int GameMap::getPlayerX(){
     return playerX;
 }
@@ -377,6 +470,8 @@ MapTile* GameMap::getCurrentTile() {
 void GameMap::setTileColor(int x, int y, const string& color) {
      map[y][x].color = color;
 }
+
+
 
 
 void GameMap::mapTurn(vector<GameCharacter>& players){
@@ -410,10 +505,16 @@ void GameMap::first_map(vector<GameCharacter>& players) {
             gameState = INTRO;
             return;
         }*/
+       if(gameState == EXIT)
+            game_play(players);
+            
         players[0].position = {players[0].opMap->getPlayerX(), players[0].opMap->getPlayerY()};
             if(getCurrentTile()->color == players[0].color)
                 continue;
+            if(getCurrentTile()->power == 0)
+                continue;
         players[0].opMap->displayMap(players, players[0].color);
+
 
         cout << "\nPress Enter to continue..."; 
         cin.ignore();
@@ -432,11 +533,15 @@ void GameMap::second_map(vector<GameCharacter>& players) {
         players[1].opMap->setPlayerPosition(players[1].position.first, players[1].position.second);
         players[1].opMap->displayMap(players, players[1].color);
         players[1].opMap->movePlayer(players[1], input);
+
+        if(gameState == EXIT)
+            game_play(players);
         players[1].position = {players[1].opMap->getPlayerX(), players[1].opMap->getPlayerY()};
         
-        if(getCurrentTile()->color == players[1].color){
+        if(getCurrentTile()->color == players[1].color)
             continue;
-        }
+        if(getCurrentTile()->power == 0)
+                continue;        
         players[1].opMap->displayMap(players, players[1].color);
         
         cout << "\nPress Enter to continue...";
