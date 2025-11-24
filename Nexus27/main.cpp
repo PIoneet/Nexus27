@@ -13,10 +13,11 @@
 #include "tiny_obj_loader.h"
 
 using namespace std;
-GameState gameState = READY; //전역 변수로 설정
+GameState gameState = READY;
+GameScore gameScore = DRAW;
 GameMap globalMap;
 vector<GameCharacter> player{ GameCharacter(&globalMap), GameCharacter(&globalMap) };
-//vector<GameCharacter> player(2, GameCharacter(&globalMap));
+int id = 0;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) //여러 창을 사용하는 경우 창을 구분하기 위해 주소를 인자로 받음.
 {

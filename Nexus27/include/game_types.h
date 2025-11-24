@@ -17,6 +17,12 @@ enum GameState {
     EXIT
 };
 
+enum GameScore{
+    WIN,
+    LOSE,
+    DRAW
+};
+
 enum class Terrain {
     Open,
     Close
@@ -56,21 +62,19 @@ public:
         }
     
     void initializeMap();
-    void distributeTerrains(std::vector<std::vector<MapTile>>& map);
-    void displayMap(vector<GameCharacter>& players, string color);
-    void movePlayer(GameCharacter& player, char& direction);
-    void movePlayer(GameCharacter& player, int direction);
-    bool isValidMove(int x, int y);
-    void setPlayerPosition(int x, int y);
     void initializeOccupiedTiles(vector<GameCharacter>& players);
     void initializeTotalPower(vector<GameCharacter>& players);
+    void initializePlayerPosition(vector<GameCharacter>& players);
+    void distributeTerrains(std::vector<std::vector<MapTile>>& map);
+    void displayMap(vector<GameCharacter>& players, string color, bool& powerCheck);
+    void movePlayer(vector<GameCharacter>& players, char& direction, int id);
+    bool isValidMove(int x, int y);
+    void setPlayerPosition(int x, int y);
+    void setTileColor(int x, int y, const std::string& color);
     int getPlayerX();
     int getPlayerY();
     MapTile* getCurrentTile();
-    void setTileColor(int x, int y, const std::string& color);
-    void mapTurn(vector<GameCharacter>& players);
-    void first_map(vector<GameCharacter>& players);
-    void second_map(vector<GameCharacter>& players);
+    void move_map(vector<GameCharacter>& players, int& id);
 };
 
 
@@ -90,8 +94,10 @@ public:
 };
 
 extern GameState gameState;
+extern GameScore gameScore;
 extern GameMap globalMap;
 extern vector<GameCharacter> player;
 extern GameCharacter* currentPlayer;
+extern int id;
 
 #endif // GAME_TYPES_H

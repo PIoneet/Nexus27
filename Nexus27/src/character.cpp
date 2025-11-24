@@ -24,15 +24,19 @@ void customize_character(vector<GameCharacter>& characters, bool& created) {
             if(!characters[i].name.empty()) break;
             else system("cls");
         }
-        characters[i].totalPower = random_generate();
-
+        characters[i].totalPower = random_generate({2,9}); //여기서 0이나 1안나오게 만들면
+    
         cout << "\n최종 전투력 수치:" << endl;
         cout << "이름: " << characters[i].name << endl;
         cout << "초기 전투력: " << characters[i].totalPower << endl;
 
         cout << "\n" << order << "번 캐릭터 커스터마이즈가 완료되었습니다!" << endl;
 
-        order++;    
+        order++;
+
+        cout << "\nPress Enter to continue...";
+        cin.ignore();
+        cin.get();  
     }
     created = true;
 
@@ -40,10 +44,10 @@ void customize_character(vector<GameCharacter>& characters, bool& created) {
 
 
 
-int random_generate() {
+int random_generate(pair<int, int> range) {
     random_device rd;
     mt19937 gen(rd());
-    uniform_int_distribution<> dis(0, 9);
+    uniform_int_distribution<> dis(range.first, range.second);
     int val = dis(gen);
     return val;
 }
