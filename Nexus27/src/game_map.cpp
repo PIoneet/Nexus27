@@ -95,8 +95,13 @@ void GameMap::initializeTotalPower(vector<GameCharacter>& players){
 }
 
 void GameMap::initializePlayerPosition(vector<GameCharacter>& players){
+    customize_character(players);
     players[0].position = {3, 4};
+    map[4][3].power = players[0].startPower;
+    players[0].currentPower = players[0].startPower;
     players[1].position = {5, 4};
+    map[4][5].power = players[1].startPower;
+    players[1].currentPower = players[1].startPower;
 }
 
 //Terrain 효과 함수
@@ -272,10 +277,22 @@ void GameMap::movePlayer(vector<GameCharacter>& players, char& direction, int id
     while(true){
         if(players[0].totalPower == players[0].occupiedTiles && players[0].totalPower != 0){
             gameScore = LOSE;
+            players[0].gameOver = true;
             return;
         }
         if(players[1].totalPower == players[1].occupiedTiles && players[1].totalPower != 0){
             gameScore = LOSE;
+            players[1].gameOver = true;
+            return;
+        }
+        if(players[1].totalPower == 0){
+            gameScore = LOSE;
+            players[0].gameOver = true; // 1번 플레이어의 승리
+            return;
+        }
+        if(players[0].totalPower == 0){
+            gameScore = LOSE;
+            players[1].gameOver = true; // 2번 플레이어의 승리
             return;
         }
 
@@ -392,6 +409,11 @@ void GameMap::setTileColor(int x, int y, const string& color) {
      map[y][x].color = color;
 }
 
+void GameMap::setCurrentPower(vector<GameCharacter>& players){
+    players[0].currentPower = map[players[0].position.first][players[0].position.second].power;
+    players[1].currentPower = map[players[1].position.first][players[1].position.second].power;
+}
+
 int GameMap::getPlayerX(){
     return playerX;
 }
@@ -410,7 +432,6 @@ void GameMap::move_map(vector<GameCharacter>& players, int& id) {
     char direction;
     bool oneCycle = true; // 한 턴에 두 플레이어가 각각 한 번씩 움직이도록 제어
     bool powerCheck = true;
-    initializePlayerPosition(players);
 
     while (true) {
         players[id].opMap->setPlayerPosition(players[id].position.first, players[id].position.second);
@@ -432,6 +453,8 @@ void GameMap::move_map(vector<GameCharacter>& players, int& id) {
         }
             
         players[id].position = {players[id].opMap->getPlayerX(), players[id].opMap->getPlayerY()};
+        setCurrentPower(players);
+
         if(getCurrentTile()->color == players[id].color)
             continue;
         if(getCurrentTile()->power == 0)

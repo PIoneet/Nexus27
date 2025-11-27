@@ -13,7 +13,7 @@
 #include "tiny_obj_loader.h"
 
 using namespace std;
-GameState gameState = READY;
+GameState gameState = INTRO;
 GameScore gameScore = DRAW;
 GameMap globalMap;
 vector<GameCharacter> player{ GameCharacter(&globalMap), GameCharacter(&globalMap) };
@@ -99,18 +99,17 @@ int main() {
 
 
     //게임 UI
-    while (gameState != EXIT) {
-        if (gameState == READY) {
+        /*if (gameState == READY) {
             new_game(player);
+        }*/
+        player[0].opMap->initializePlayerPosition(player);
+        system("cls");
+        while(gameState == INTRO) {
+            game_play(player);
         }
-        else if (gameState == INTRO) {
-            system("cls");
-            while(gameState == INTRO) {
-                game_play(player);
-            }
 
-        }
-    }
+    
+    
     cout << "게임을 종료합니다. 감사합니다!" << endl;
     cout << "Press Enter to continue...";
     cin.ignore();

@@ -71,6 +71,7 @@ public:
     bool isValidMove(int x, int y);
     void setPlayerPosition(int x, int y);
     void setTileColor(int x, int y, const std::string& color);
+    void setCurrentPower(vector<GameCharacter>& players);
     int getPlayerX();
     int getPlayerY();
     MapTile* getCurrentTile();
@@ -81,15 +82,18 @@ public:
 class GameCharacter : public MapTile {
 public:
     string name;
+    int hp;
+    int startPower; //초기 전투력
     int currentPower; //현재 타일의 전투력
     int totalPower; //전투력 총합
     int occupiedTiles; //점령한 타일 수
     bool turn; // 현재 턴 여부
+    bool gameOver; // 게임 종료 여부
     bool zero_power; // 현재 타일 전투력이 0인지 여부
     GameMap* opMap; //2명의 플레이어가 참조할 하나의 opMap
 
     GameCharacter (GameMap* opMap)
-        : MapTile(), name(""), currentPower(0), totalPower(0), occupiedTiles(0), turn(true), zero_power(false), opMap(opMap) {}
+        : MapTile(), name(""), hp(3), startPower(0), currentPower(0), totalPower(0), occupiedTiles(0), turn(true), gameOver(false) ,zero_power(false), opMap(opMap) {}
 
 };
 
