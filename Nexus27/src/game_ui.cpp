@@ -79,6 +79,9 @@ void game_play(vector<GameCharacter>& players) {
     cout << "\n"; 
     
     // HP 표시 추가
+    cout << 1 << "번 플레이어 " << players[0].name << " vs  ";
+    cout << 2 << "번 플레이어 " << players[1].name << "\n" << endl;
+
     cout << "[ HP 상태 ]" << endl;
     cout << "1번 플레이어 HP: ";
     for(int i = 0; i < players[0].hp; ++i) {
@@ -91,10 +94,8 @@ void game_play(vector<GameCharacter>& players) {
         cout << "♥ ";
     }
    
-    cout << "\n";
+    cout << "\n" << endl;
     
-    cout << 1 << "번 플레이어 " << players[0].name << " vs ";
-    cout << 2 << "번 플레이어 " << players[1].name << "\n" << endl;
     cout << "1. 탐색 진행" << endl;
     cout << "2. 캐릭터 변경" << endl;
     cout << "3. 게임 종료\n" << endl;
