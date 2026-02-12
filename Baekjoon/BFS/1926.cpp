@@ -4,8 +4,9 @@ using namespace std;
 
 
 int main(){
-    int inputWidth;
+    
     int inputHeight;
+    int inputWidth;
     int input;
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
