@@ -15,7 +15,7 @@ int main(){
     int board[1000][1000]; //저장할 2차원 배열
     int dist[1000][1000] = {0}; //방문 여부 확인
     queue<pair<int, int>> Q; 
-    int row[4] = {0, 0, 1, -1}; //윗쪽, 아래쪽, 오른쪽, 왼쪽 순서
+    int row[4] = {0, 0, 1, -1}; //오른쪽 왼쪽 하 상
     int column[4] = {1, -1, 0, 0};
     int path = 0;
 
