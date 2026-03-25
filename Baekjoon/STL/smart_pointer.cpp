@@ -23,7 +23,8 @@ public:
 int main()
 {
     smart_pointer_example smart_p(10);
-    std::unique_ptr& p = smart_p.getSmartPointer();
+    std::unique_ptr p = smart_p.getSmartPointer();
+    // 오른쪽이 Rvalue라서 이동밖에 안되는거네. 그니까 여기선 복사를 걱정할 필요 없네
 
     cout << p << endl;
     *p = 100;
